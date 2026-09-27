@@ -1,0 +1,88 @@
+name: Pack and publish
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the packed package to NuGet.org"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore TheSingularityWorkshop.MicroBundleDomain.csproj
+
+      - name: Test with coverage
+        run: dotnet test tests/MicroBundleDomain.Tests/MicroBundleDomain.Tests.csproj --configuration Release --no-restore --collect:"XPlat Code Coverage;Format=cobertura" --results-directory ./TestResults
+
+      - name: Prepare coverage report
+        shell: bash
+        run: |
+          coverage_file="$(find ./TestResults -type f -name 'coverage.cobertura.xml' -print -quit)"
+          if [[ -z "$coverage_file" ]]; then
+            echo "No coverage.cobertura.xml file was produced."
+            find ./TestResults -maxdepth 4 -type f -print || true
+            exit 1
+          fi
+          cp "$coverage_file" ./TestResults/coverage.cobertura.xml
+          echo "Prepared coverage report: $coverage_file"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: TrentBest/TheSingularityWorkshop.MicroBundleDomain
+          files: ./TestResults/coverage.cobertura.xml
+          fail_ci_if_error: true
+
+      - name: Pack
+        run: dotnet pack TheSingularityWorkshop.MicroBundleDomain.csproj --configuration Release --no-restore --output ./artifacts
+
+      - name: Upload NuGet package as artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: microbundle-domain-nuget-package
+          path: ./artifacts/*.nupkg
+
+  publish_nuget:
+    needs: package
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'workflow_dispatch' && inputs.publish == true
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Download NuGet package
+        uses: actions/download-artifact@v8
+        with:
+          name: microbundle-domain-nuget-package
+          path: ./artifacts
+
+      - name: Authenticate with NuGet Trusted Publishing
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: TheSingularityWorkshop
+
+      - name: Publish package to NuGet.org
+        run: dotnet nuget push "./artifacts/*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --skip-duplicate
