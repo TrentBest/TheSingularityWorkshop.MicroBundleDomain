@@ -9,6 +9,8 @@
 [![Last commit](https://img.shields.io/github/last-commit/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/commits/master)
 [![Code Coverage](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain/graph/badge.svg)](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
 
+![Opaque MicroBundle Capability Core](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-01.png)
+
 A MicroBundle is a **loadable semantic capability**.
 
 This repository provides the small, reusable domain-side descriptors needed to identify a MicroBundle and declare its composition surface without teaching the hosting ecosystem what the capability means.
@@ -60,6 +62,14 @@ Optional capabilities remain optional.
 
 A bundle that declares no dependencies or providers can stand alone. A richer bundle can declare only the capabilities it needs. The runtime can then resolve and load the resulting composition rather than pulling an entire domain into memory.
 
+## Geometry as a compatibility surface
+
+The Forge metaphor makes compatibility visible: a state shell exposes a transition surface, while a condition supplies the shape that can fit it.
+
+![Forge geometry compatibility surface](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-02.png)
+
+The geometry is not the runtime itself. It is a manifestation of the contracts that determine whether a capability can compose.
+
 ## Relationship to FSM_COS
 
 FSM_COS owns runtime composition. This package owns domain-side description.
@@ -93,3 +103,5 @@ Concrete domain families should remain separately owned and publishable.
 This is an alpha foundation. The contract is intentionally small so that WebPage can consume domain packages without the hosting layer accumulating domain-specific assumptions.
 
 See [MicroBundle Domain Theory](docs/THEORY.md).
+
+![Trent Best](https://avatars.githubusercontent.com/u/16405167?v=4&size=200)
