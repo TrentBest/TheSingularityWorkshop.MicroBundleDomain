@@ -92,7 +92,7 @@ The descriptor is not a replacement for `IMicroBundle`. It is metadata that a do
 ## Packaging
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Version:** `0.1.0-alpha.1`  
+**Version:** `0.1.0-alpha.2`  
 **Target:** .NET 8  
 **License:** MIT
 
