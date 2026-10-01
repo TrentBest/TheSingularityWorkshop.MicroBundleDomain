@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>TheSingularityWorkshop.MicroBundleDomain</PackageId>
-    <Version>0.1.0-alpha.1</Version>
+    <Version>0.1.0-alpha.2</Version>
     <Authors>Trent Best</Authors>
     <Company>The Singularity Workshop</Company>
     <Description>Domain-side foundation for defining and composing loadable MicroBundle semantic capabilities.</Description>
