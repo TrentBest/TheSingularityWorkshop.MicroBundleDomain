@@ -8,6 +8,12 @@ public sealed class MicroBundleDefinition
 {
     private readonly IReadOnlyList<MicroBundleField> _fields;
 
+    /// <summary>
+    /// Initializes a new editor-time MicroBundle definition.
+    /// </summary>
+    /// <param name="name">Human-readable name of the MicroBundle.</param>
+    /// <param name="descriptor">Runtime identity and capability descriptor for the MicroBundle.</param>
+    /// <param name="fields">Optional recursively inspectable configuration fields.</param>
     public MicroBundleDefinition(
         string name,
         MicroBundleDescriptor descriptor,
@@ -24,14 +30,29 @@ public sealed class MicroBundleDefinition
         Descriptor = descriptor;
     }
 
+    /// <summary>
+    /// Gets the human-readable MicroBundle name.
+    /// </summary>
     public string Name { get; }
 
+    /// <summary>
+    /// Gets the runtime identity and capability descriptor.
+    /// </summary>
     public MicroBundleDescriptor Descriptor { get; }
 
+    /// <summary>
+    /// Gets the MicroBundle identity.
+    /// </summary>
     public ulong Id => Descriptor.Id;
 
+    /// <summary>
+    /// Gets the MicroBundle version.
+    /// </summary>
     public string Version => Descriptor.Version;
 
+    /// <summary>
+    /// Gets the recursively inspectable configuration fields.
+    /// </summary>
     public IReadOnlyList<MicroBundleField> Fields => _fields;
 
     private static IReadOnlyList<MicroBundleField> MaterializeFields(
@@ -57,6 +78,15 @@ public sealed class MicroBundleField
 {
     private readonly IReadOnlyList<MicroBundleField> _children;
 
+    /// <summary>
+    /// Initializes a new editable MicroBundle field.
+    /// </summary>
+    /// <param name="name">Field name.</param>
+    /// <param name="kind">Semantic value/control category.</param>
+    /// <param name="defaultValue">Optional default value for the field.</param>
+    /// <param name="minimum">Optional inclusive numeric minimum.</param>
+    /// <param name="maximum">Optional inclusive numeric maximum.</param>
+    /// <param name="children">Optional recursively nested fields.</param>
     public MicroBundleField(
         string name,
         MicroBundleFieldKind kind,
@@ -86,16 +116,34 @@ public sealed class MicroBundleField
         Maximum = maximum;
     }
 
+    /// <summary>
+    /// Gets the field name.
+    /// </summary>
     public string Name { get; }
 
+    /// <summary>
+    /// Gets the semantic field/control category.
+    /// </summary>
     public MicroBundleFieldKind Kind { get; }
 
+    /// <summary>
+    /// Gets the optional default value.
+    /// </summary>
     public object? DefaultValue { get; }
 
+    /// <summary>
+    /// Gets the optional inclusive numeric minimum.
+    /// </summary>
     public double? Minimum { get; }
 
+    /// <summary>
+    /// Gets the optional inclusive numeric maximum.
+    /// </summary>
     public double? Maximum { get; }
 
+    /// <summary>
+    /// Gets recursively nested child fields.
+    /// </summary>
     public IReadOnlyList<MicroBundleField> Children => _children;
 
     private static IReadOnlyList<MicroBundleField> MaterializeChildren(
