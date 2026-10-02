@@ -4,18 +4,48 @@ This guide answers the practical question:
 
 > **How do I turn one of my capabilities into a MicroBundle that another composition host can use without taking a dependency on that host?**
 
+## If you are completely new
+
+Start with **[What Is a MicroBundle?](WHAT_IS_A_MICROBUNDLE.md)**.
+
+Then follow the **[MicroBundle Adventures](ADVENTURES.md)**.
+
+The adventures intentionally teach one idea at a time:
+
+~~~text
+What is it?
+    |
+    v
+Build one
+    |
+    v
+Add a dependency
+    |
+    v
+Put it in a repository
+    |
+    v
+Make it configurable
+    |
+    v
+Build your own ecosystem
+    |
+    v
+Understand arbitration
+~~~
+
+You do not need to understand the entire framework before writing your first capability.
+
 ## 1. Add the package
 
-The intended package reference is:
+The corrected package is staged as:
 
-```xml
+~~~xml
 <PackageReference Include="TheSingularityWorkshop.MicroBundleDomain"
                   Version="2.0.0-alpha.1" />
-```
+~~~
 
-> The corrected `2.0.0-alpha.1` source is currently staged for release review. Use the version available in your configured package source when it is published.
-
-The package targets .NET 8 and has no dependency on FSM_COS, a GUI framework, REST, storage, or a host application.
+The package targets .NET 8 and has no dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
 
 ## 2. Define your capability
 
@@ -23,7 +53,7 @@ Start with `IMicroBundle`.
 
 A minimal capability looks like this:
 
-```csharp
+~~~csharp
 using TheSingularityWorkshop.MicroBundleDomain;
 
 public sealed class GreetingMicroBundle : IMicroBundle
@@ -54,7 +84,7 @@ public sealed class GreetingMicroBundle : IMicroBundle
         return false;
     }
 }
-```
+~~~
 
 You now have a capability with a domain-owned identity and lifecycle.
 
@@ -62,23 +92,23 @@ You now have a capability with a domain-owned identity and lifecycle.
 
 Suppose the greeting capability needs a localization capability:
 
-```csharp
+~~~csharp
 public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
 [
     MicroBundleDependencyRequest.Unconfigured(2001)
 ];
-```
+~~~
 
 Or provide configuration bytes with the request:
 
-```csharp
+~~~csharp
 public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
 [
     new(
         BundleId: 2001,
         Configuration: configurationBytes)
 ];
-```
+~~~
 
 The important distinction is that your bundle **declares the dependency**.
 
@@ -90,7 +120,7 @@ The host supplies an `IMicroBundleLoadContext`.
 
 Your bundle can request its configuration:
 
-```csharp
+~~~csharp
 public void Load(IMicroBundleLoadContext context)
 {
     if (!context.TryGetConfiguration(
@@ -102,7 +132,7 @@ public void Load(IMicroBundleLoadContext context)
 
     // Interpret configuration according to your domain/protocol.
 }
-```
+~~~
 
 MicroBundleDomain deliberately treats the configuration as opaque bytes.
 
@@ -114,7 +144,7 @@ Loading establishes the capability in the runtime.
 
 Arbitration lets the capability respond to the **composition around it**.
 
-```csharp
+~~~csharp
 public bool Arbitrate(
     IMicroBundleArbitrationContext context,
     int roundIndex)
@@ -126,9 +156,9 @@ public bool Arbitrate(
 
     return false;
 }
-```
+~~~
 
-Return `true` only when your bundle actually changed something that requires another composition round.
+Return true only when your bundle actually changed something that requires another composition round.
 
 The host owns the arbitration loop. The MicroBundle owns its response to the composition.
 
@@ -136,7 +166,7 @@ The host owns the arbitration loop. The MicroBundle owns its response to the com
 
 If your capability has data that tooling should be able to inspect, define a `MicroBundleDefinition`:
 
-```csharp
+~~~csharp
 var definition = new MicroBundleDefinition(
     name: "Greeting",
     descriptor: bundle.Descriptor,
@@ -154,75 +184,63 @@ var definition = new MicroBundleDefinition(
             minimum: 1,
             maximum: 10)
     ]);
-```
+~~~
 
 A tooling or GUI package can inspect this schema without knowing what a Greeting actually does.
 
-## 7. Keep the domain package independent
+## 7. Understand the repository boundary
 
-This is the rule that makes the package useful.
+When you need to discover or materialize capabilities, add a repository layer.
 
-Your MicroBundle implementation should not need references to:
+The repository answers:
 
-- FSM_COS
-- MicroBundleRepository
-- FSM_REST
-- Blazor
-- WPF
-- Unity
-- Azure
-- a particular application
+> **Where can I get this capability?**
 
-The capability should depend on the **contract**, not the host.
+The domain package answers:
 
-```text
-                    ┌──────────────────────┐
-                    │ Your Domain Package  │
-                    │                      │
-                    │ GreetingMicroBundle  │
-                    └──────────┬───────────┘
-                               │ implements
-                               ▼
-                    ┌──────────────────────┐
-                    │   MicroBundleDomain  │
-                    └──────────┬───────────┘
-                               ▲
-                               │ consumes
-                    ┌──────────┴───────────┐
-                    │    Composition Host  │
-                    │      FSM_COS/etc.    │
-                    └──────────────────────┘
-```
+> **What is this capability?**
 
-This means the same domain capability can be consumed by more than one host.
+Keep those questions separate.
+
+~~~text
+MicroBundleDomain
+       ^
+       |
+MicroBundleRepository
+       |
+       v
+artifact / materialization
+~~~
+
+The repository can be your own implementation. It does not have to be the Singularity Workshop repository.
+
+Read **[Ecosystem Guide](ECOSYSTEM.md)** for the full model.
 
 ## 8. Understand what happens after your package
 
-MicroBundleDomain does not perform the whole composition operation.
+A typical composition pipeline is:
 
-A typical host pipeline is:
-
-```text
+~~~text
 Manifest
-   │
-   ▼
+   |
+   v
 Repository / catalog
-   │
-   ▼
+   |
+   v
 MicroBundle instances
-   │
-   ▼
+   |
+   v
 dependency closure
-   │
-   ▼
+   |
+   v
 Load
-   │
-   ▼
+   |
+   v
 Arbitration
-   │
-   ▼
+   |
+   v
 RuntimeAssembly
-```
+~~~
 
 In the Singularity Workshop ecosystem, FSM_COS performs that orchestration.
 
@@ -241,11 +259,16 @@ The passport answers:
 - How do I install you?
 - How do you participate when you meet other capabilities?
 
-The composition host can then work with the passport without becoming an expert in the capability's internal domain.
+The repository finds the capability.
+
+The composition host assembles it.
+
+The application manifests the resulting runtime.
 
 ## Next steps
 
-- Read **[Architecture](ARCHITECTURE.md)** to understand why the dependencies point in these directions.
-- Read **[MicroBundle Domain Theory](THEORY.md)** for the larger model.
-- Look at the independent runtime contract tests in `tests/MicroBundleDomain.Tests`.
-- Look at FSM_COS for one composition-host implementation of the contracts.
+- **[What Is a MicroBundle?](WHAT_IS_A_MICROBUNDLE.md)**
+- **[Adventures](ADVENTURES.md)**
+- **[Ecosystem Guide](ECOSYSTEM.md)**
+- **[Architecture](ARCHITECTURE.md)**
+- **[Theory](THEORY.md)**
