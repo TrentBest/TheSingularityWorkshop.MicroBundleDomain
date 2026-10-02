@@ -1,67 +1,274 @@
 # What Is a MicroBundle?
 
-## Start with **Micro**
+## You do not need to be a programmer to start here
 
-**Micro does not mean a tiny file.**
+If the word **MicroBundle** is new to you, forget the code for a moment.
 
-It means a **focused unit of capability**.
+Imagine a large workshop.
 
-A MicroBundle is small in *scope*: it represents one coherent capability that can be identified, versioned, configured, loaded, and composed independently. A MicroBundle may contain very little code or a substantial internal implementation.
+You do not want one giant machine that knows how to do **everything**. You want useful pieces that can be brought into the workshop when they are needed:
 
-**Micro describes the capability boundary, not the number of bytes.**
+- a temperature system
+- a material system
+- a rendering system
+- a language system
+- a structural-analysis system
+- a door
+- a sensor
+- a payment capability
+- a piece of business logic
 
-## And what does "Bundle" mean?
+Each piece has a job.
 
-The word *bundle* is not new. Software has used bundles, packages, modules, plugins, components, and similar ideas for decades.
+A **MicroBundle is a way of giving one such capability a well-defined boundary** so that it can be identified, brought into a larger system, configured, and combined with other capabilities without requiring the larger system to understand the capability's private meaning.
 
-We do not need to claim that nobody has ever discussed bundles. The useful question is:
+That is the idea.
 
-> **What does this particular bundle boundary guarantee?**
+You do not need to understand .NET, C#, FSM_COS, repositories, or serialization to understand the idea.
 
-A MicroBundle combines:
+---
+
+## The simplest possible definition
+
+> **A MicroBundle is an independently identifiable capability that can tell a larger system what it is, what it needs, and how it participates when it is brought together with other capabilities.**
+
+The word **Micro** describes the **scope of the capability**, not its file size.
+
+The word **Bundle** describes the fact that the capability comes with the information and behavior needed to participate as a unit.
+
+So:
+
+**MicroBundle = focused capability boundary.**
+
+---
+
+## Think about a toolbox
+
+Imagine opening a toolbox.
+
+You might find:
 
 ~~~text
-                  MicroBundle
-                       |
-       +---------------+----------------+
-       |               |                |
-    Identity       Dependencies     Configuration
-       |               |                |
-       +---------------+----------------+
-                       |
-                 Load + Arbitration
-                       |
-                       v
-                Composable capability
+Hammer
+Screwdriver
+Level
+Wrench
+Tape Measure
 ~~~
 
-That gives a composition host a common vocabulary without requiring the host to understand the domain.
+You do not need to rebuild the toolbox every time you want to use the hammer.
 
-## A MicroBundle is a capability, not a feature folder
+You identify the tool, take it out, and use it for its purpose.
 
-A folder such as Physics/ or Rendering/ is organization.
+Now imagine that the tools can also say:
 
-A MicroBundle is a **runtime boundary**.
+~~~text
+Hammer
+  "I am a hammer."
+  "I am version 2."
+  "I require a handle."
+  "Here is how I fit into the workshop."
+~~~
+
+That is closer to what a MicroBundle does.
+
+The analogy is not the implementation. It is simply a way to understand the boundary.
+
+---
+
+## What makes the boundary useful?
+
+A MicroBundle can carry several kinds of information:
+
+~~~text
+                    MicroBundle
+                         |
+          +--------------+--------------+
+          |              |              |
+       Identity      Dependencies   Configuration
+          |              |              |
+          +--------------+--------------+
+                         |
+                    Load + Arbitration
+                         |
+                         v
+                 Composable capability
+~~~
+
+In ordinary language:
+
+| Question | Meaning |
+|---|---|
+| **Who are you?** | Identity and version |
+| **What do you need?** | Dependencies |
+| **How should I configure you?** | Configuration |
+| **How do you enter the runtime?** | Loading |
+| **What happens when you meet other capabilities?** | Arbitration |
+
+You do not have to understand the implementation of those mechanisms yet.
+
+The important idea is that the capability brings its **own boundary** with it.
+
+---
+
+## What does “Micro” mean?
+
+**Micro does not mean tiny.**
+
+It does not mean:
+
+- a tiny DLL
+- a small amount of code
+- a microservice
+- a network service
+- a disposable component
+
+It means **focused**.
+
+A MicroBundle might contain a small amount of code.
+
+It might also contain a substantial implementation.
+
+What matters is that its **responsibility is coherent**.
 
 For example:
 
 ~~~text
-ThermalMicroBundle
-    identity: Thermal
-    version: 1.0.0
-    requires: Material
-    configuration: temperature model
-    load: install thermal capability
-    arbitration: reconcile with composition
+Good boundary:
+
+Thermal Capability
+  -> thermal behavior
+
+Material Capability
+  -> material behavior
+
+Rendering Capability
+  -> rendering behavior
 ~~~
 
-The host does not need an "if this is Thermal" branch.
+The implementation can be large.
 
-It only needs to understand the MicroBundle contract.
+The boundary remains understandable.
+
+---
+
+## What is a capability?
+
+A **capability** is something a system can do, provide, understand, or make available.
+
+Examples:
+
+~~~text
+"The system can calculate thermal behavior."
+
+"The system can render geometry."
+
+"The system can understand a material."
+
+"The system can provide French language support."
+
+"The system can expose a REST operation."
+
+"The system can simulate a physical system."
+~~~
+
+The MicroBundle does not decide what those things mean.
+
+**The capability author does.**
+
+MicroBundleDomain provides the common boundary through which the capability can participate in a larger system.
+
+---
+
+## What is *not* a MicroBundle?
+
+This distinction matters.
+
+A MicroBundle is not simply:
+
+- a folder in a project
+- a namespace
+- a NuGet package
+- a DLL
+- a microservice
+- a GUI control
+- a database record
+- a manifest
+- a repository
+
+Those things may **contain, describe, transport, store, display, or deliver** a MicroBundle.
+
+They are not automatically the capability boundary itself.
+
+For example:
+
+~~~text
+NuGet
+  -> can distribute the software that implements a MicroBundle
+
+Repository
+  -> can store or deliver a MicroBundle artifact
+
+GUI
+  -> can let a human configure a MicroBundle
+
+Manifest
+  -> can request a MicroBundle
+
+Composition Host
+  -> can assemble MicroBundles
+
+MicroBundle
+  -> is the capability being composed
+~~~
+
+Keeping those meanings separate is one of the reasons this package exists.
+
+---
+
+## A real-world example without code
+
+Imagine an application that knows about buildings.
+
+Someone creates a **Thermal Capability**.
+
+The person who created it decides what thermal behavior means.
+
+They might define:
+
+~~~text
+Thermal
+  identity: Thermal
+  version: 1.0
+  needs: Material
+  accepts: thermal configuration
+  provides: thermal behavior
+~~~
+
+Now another person creates a **Material Capability**.
+
+~~~text
+Material
+  identity: Material
+  version: 3.0
+  provides: material properties
+~~~
+
+The important thing is this:
+
+**The application does not have to become a thermal engineer or a materials engineer just to put those capabilities together.**
+
+The capabilities describe their own requirements.
+
+The composition system works with the common contract.
+
+That is the architectural idea.
+
+---
 
 ## The three questions
 
-A composable capability system deliberately separates:
+A composable capability system deliberately separates three questions:
 
 | Question | Boundary |
 |---|---|
@@ -69,99 +276,174 @@ A composable capability system deliberately separates:
 | **Where can I get it?** | MicroBundleRepository |
 | **How do I compose it?** | FSM_COS or another composition host |
 
-### MicroBundleDomain — what
+### 1. What is it?
 
-Your domain defines the capability.
+**MicroBundleDomain** defines the neutral capability contract.
 
-It owns identity, version, dependencies, providers, configuration schema, executable behavior, and arbitration behavior.
+It provides the vocabulary for identity, version, dependencies, providers, configuration, loading, and arbitration.
 
-It does **not** need to know where the capability will run.
+### 2. Where can I get it?
 
-### MicroBundleRepository — where
+A **MicroBundleRepository** deals with artifacts.
 
-A repository delivers artifacts.
+It might use:
 
-It may use a local directory, Git, HTTP, Azure Blob Storage, a database, an object store, a private enterprise service, or something entirely custom.
+- a local filesystem
+- Git
+- HTTP
+- Azure Blob Storage
+- an object store
+- a database
+- a private enterprise service
+- something completely different
 
-The repository implementation is free to choose its storage model.
+The Domain package does not require any particular repository.
 
-### FSM_COS — how
+### 3. How do I compose it?
 
-FSM_COS is one composition host. Another organization can build another.
+A **composition host** decides how capabilities become a runtime.
 
-The composition host resolves the requested graph and turns it into a runtime.
+FSM_COS is one composition host.
 
-## You can build your own MicroBundle ecosystem
+Another organization can build another.
 
-The Singularity Workshop repository is **one implementation**, not a law of nature.
+The MicroBundle contract does not belong to FSM_COS.
 
-You could build:
+---
 
-~~~text
-Acme.MicroBundleDomain
-        |
-        +-- shared contract
+## Why does that separation matter?
 
-Acme.MicroBundleRepository
-        |
-        +-- S3
-        +-- Git
-        +-- private artifact service
-
-Acme.CompositionHost
-        |
-        +-- your runtime
-
-Acme.Thermal
-Acme.Materials
-Acme.Rendering
-~~~
-
-The capabilities remain yours. The repository remains yours. The composition host remains yours. The contract is the common seam.
-
-## MicroBundle versus NuGet package
-
-A NuGet package is primarily a **software distribution mechanism**.
-
-A MicroBundle is a **runtime composition capability**.
-
-A NuGet package can contain a MicroBundle implementation:
+Consider what happens if the host has to know every domain:
 
 ~~~text
-NuGet package
-     |
-     +-- MicroBundle implementation
-              |
-              +-- Repository materialization
-                         |
-                         +-- Composition host
+if Thermal...
+if Physics...
+if Rendering...
+if Materials...
+if AEC...
+if Magic...
+if WhateverComesNext...
 ~~~
 
-Do not confuse the package boundary with the capability boundary.
+Every new capability becomes another special case.
 
-## MicroBundle versus plugin
+The host becomes a giant encyclopedia of everybody else's domains.
 
-A plugin usually answers:
+MicroBundleDomain reverses that relationship.
 
-> "Can I extend this host with additional code?"
+Instead:
 
-A MicroBundle answers:
+~~~text
+Capability
+    |
+    v
+MicroBundleDomain contract
+    |
+    v
+Composition Host
+~~~
 
-> "Can this capability identify itself, declare what it needs, accept configuration, load into a runtime, and participate in composition without becoming part of the host's domain model?"
+The host learns **how to work with a MicroBundle**.
 
-A plugin can be implemented as a MicroBundle. A MicroBundle does not have to be tied to one plugin host.
+It does not have to learn what every MicroBundle means.
 
-## MicroBundle versus microservice
+That is the **anti-if** idea behind the boundary.
+
+---
+
+## MicroBundle versus a plugin
+
+A plugin usually asks:
+
+> "How can I extend this particular host?"
+
+A MicroBundle asks a broader question:
+
+> "How can this capability identify itself, declare what it needs, accept configuration, load into a runtime, and participate in composition without becoming part of the host's domain model?"
+
+A plugin can be implemented as a MicroBundle.
+
+A MicroBundle does not have to belong to one particular plugin host.
+
+---
+
+## MicroBundle versus a microservice
 
 A microservice is a distributed service boundary.
 
 A MicroBundle is a capability composition boundary.
 
-A MicroBundle can run entirely inside one process. The word **Micro** does not imply a network boundary.
+A MicroBundle can run entirely inside one process.
 
-## The simplest mental model
+So **Micro** does not imply networking.
 
-Think of a MicroBundle as a **capability with a passport**.
+---
+
+## MicroBundle versus NuGet
+
+A NuGet package is primarily a **software distribution mechanism**.
+
+A MicroBundle is a **runtime composition capability**.
+
+They can work together:
+
+~~~text
+NuGet
+  |
+  +-- distributes implementation
+
+MicroBundle
+  |
+  +-- represents capability
+
+Repository
+  |
+  +-- delivers artifact
+
+Composition Host
+  |
+  +-- assembles runtime
+~~~
+
+One does not replace the other.
+
+---
+
+## You can build your own ecosystem
+
+The Singularity Workshop implementations are examples, not requirements.
+
+A completely independent organization could create:
+
+~~~text
+ExampleCompany
+  |
+  +-- Thermal capabilities
+  +-- Material capabilities
+  +-- Rendering capabilities
+  |
+  +-- ExampleCompany.Repository
+  |
+  +-- ExampleCompany.Composition
+~~~
+
+They can keep their own domains, storage, delivery system, and composition host.
+
+They only need to agree on the MicroBundle contract if they want interoperability through that contract.
+
+That is an important property:
+
+> **The contract is smaller than the ecosystem.**
+
+You can adopt the contract without adopting everything around it.
+
+---
+
+## The passport analogy
+
+Here is the mental model to keep:
+
+> **A MicroBundle is a capability carrying its own passport.**
 
 The passport answers:
 
@@ -170,30 +452,118 @@ Who am I?
 What version am I?
 What do I require?
 What do I expose?
-How do I load?
-How do I react to the other capabilities around me?
+How do I enter a runtime?
+How do I respond to the capabilities around me?
 ~~~
 
-The repository finds the passport and implementation.
+The **repository** helps find and materialize the traveler.
 
-The composition host decides how capabilities become a runtime.
+The **composition host** decides how travelers are assembled.
 
-The application decides what the resulting runtime means to its users.
+The **application or Experience** decides what people ultimately see and do.
+
+The passport is not the person.
+
+The repository is not the person.
+
+The airport is not the person.
+
+The capability remains the capability.
+
+---
+
+## There are actually two audiences for the Domain package
+
+This is an important distinction.
+
+MicroBundleDomain contains two complementary kinds of contract:
+
+### Runtime contract
+
+For a composition host.
+
+It describes the executable capability and its lifecycle:
+
+~~~text
+IMicroBundle
+MicroBundleDescriptor
+MicroBundleDependencyRequest
+IMicroBundleLoadContext
+IMicroBundleArbitrationContext
+~~~
+
+### Description contract
+
+For editors and tooling.
+
+It describes configurable structure without requiring the editor to execute the capability:
+
+~~~text
+MicroBundleDefinition
+MicroBundleField
+~~~
+
+That means a future visual editor can ask:
+
+> "What can I configure?"
+
+without needing to understand the implementation of the capability.
+
+A GUI can turn a string into a textbox.
+
+A web editor can turn an integer range into a control.
+
+A command-line tool can turn the same information into prompts.
+
+**The Domain describes the meaning. The tool chooses the manifestation.**
+
+---
 
 ## The architectural test
 
-Ask:
+Here is the test that matters more than any particular class name:
 
 > **Could another host consume this capability without learning the internal semantics of my domain?**
 
-If yes, the boundary is working.
+If yes, the boundary is doing useful work.
 
-If the host must learn what Thermal, Element, Mesh, AEC, or Magic means before it can compose the capability, the domain boundary has leaked.
+If the host must learn what Thermal, Element, Mesh, AEC, Magic, or some future domain means before it can compose the capability, the domain boundary has leaked.
 
-## Keep going
+---
 
-- [Getting Started](GETTING_STARTED.md)
-- [Adventures](ADVENTURES.md)
-- [Ecosystem Guide](ECOSYSTEM.md)
-- [Architecture](ARCHITECTURE.md)
-- [Theory](THEORY.md)
+## If you only remember five things
+
+~~~text
+1. A MicroBundle is a focused capability.
+
+2. "Micro" means focused scope, not tiny code.
+
+3. The capability owns its meaning.
+
+4. The repository answers WHERE.
+   The composition host answers HOW.
+
+5. The common contract lets independently
+   authored capabilities meet.
+~~~
+
+That is enough to continue.
+
+You do not need to understand the code yet.
+
+## Choose your next path
+
+**I want to see it, not code it yet.**  
+→ Continue through the [Adventures](ADVENTURES.md).
+
+**I want to build one.**  
+→ Read [Getting Started](GETTING_STARTED.md).
+
+**I want to understand the architecture.**  
+→ Read [Architecture](ARCHITECTURE.md).
+
+**I want to understand why it was designed this way.**  
+→ Read [Theory](THEORY.md).
+
+**I want to know what each word means.**  
+→ Read [Glossary](GLOSSARY.md).
