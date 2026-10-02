@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet version](https://img.shields.io/nuget/v/TheSingularityWorkshop.MicroBundleDomain?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
 [![NuGet downloads](https://img.shields.io/nuget/dt/TheSingularityWorkshop.MicroBundleDomain?logo=nuget&style=flat-square)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/TrentBest/TheSingularityWorkshop.MicroBundleDomain/package.yml?branch=master&style=flat-square&logo=github)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/workflows/package.yml)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/TrentBest/TheSingularityWorkshop.MicroBundleDomain/package.yml?branch=master&style=flat-square&logo=github)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/workflows/build.yml)
 [![Last commit](https://img.shields.io/github/last-commit/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/commits/master)
 [![Code Coverage](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain/graph/badge.svg)](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
 
@@ -92,7 +92,7 @@ The descriptor is not a replacement for `IMicroBundle`. It is metadata that a do
 ## Packaging
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Version:** `0.1.0-alpha.2`  
+**Version:** `1.0.0`  
 **Target:** .NET 8  
 **License:** MIT
 
@@ -100,7 +100,7 @@ Concrete domain families should remain separately owned and publishable.
 
 ## Status
 
-This is an alpha foundation. The contract is intentionally small so that WebPage can consume domain packages without the hosting layer accumulating domain-specific assumptions.
+This is a stable `1.0.0` foundation. The contract is intentionally small so that WebPage can consume domain packages without the hosting layer accumulating domain-specific assumptions.
 
 See [MicroBundle Domain Theory](docs/THEORY.md).
 
