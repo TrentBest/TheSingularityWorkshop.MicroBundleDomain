@@ -29,11 +29,11 @@ MicroBundleDomain
 MicroBundleRepository
 ~~~
 
-MicroBundleDomain defines **what** a capability is.
+MicroBundleDomain defines **what** a capability is and the neutral contracts through which it participates in a runtime.
 
-A repository implementation handles **where** the capability comes from.
+A repository implementation handles **where** the capability artifact comes from.
 
-A composition host is an additional consumer that answers **how** capabilities become a runtime.
+A composition host is an additional consumer that answers **how** capabilities become a runtime. The host owns dependency resolution, ordering, the arbitration loop, convergence, and `RuntimeAssembly`.
 
 This means a third party can replace the repository and composition host without replacing the domain contract.
 
@@ -156,6 +156,31 @@ Now both sides understand the same contract without becoming dependent on one an
 
 That is the reusable seam.
 
+## Runtime contract versus description contract
+
+MicroBundleDomain contains two complementary contract surfaces:
+
+```text
+MicroBundleDomain
+│
+├── Runtime contract
+│   ├── IMicroBundle
+│   ├── MicroBundleDescriptor
+│   ├── MicroBundleDependencyRequest
+│   ├── IMicroBundleLoadContext
+│   └── IMicroBundleArbitrationContext
+│
+└── Description contract
+    ├── MicroBundleDefinition
+    └── MicroBundleField
+```
+
+The **runtime contract** is for composition hosts. It defines the executable lifecycle and the information a capability exchanges with its host.
+
+The **description contract** is for authoring and tooling. It exposes inspectable configuration structure so an editor, Forge, manifest tool, or GUI adapter can reason about a capability without executing it.
+
+This does not make the domain package GUI-aware. The domain defines semantic field categories; a GUI or editor decides how those categories are manifested.
+
 ## Runtime lifecycle
 
 The executable contract has four conceptual stages.
@@ -198,7 +223,7 @@ bool Arbitrate(
 
 The bundle can inspect the current composition and respond to other participating capabilities.
 
-The host controls the arbitration loop and convergence policy.
+The host controls the arbitration loop and convergence policy. A MicroBundle participates in that process; it does not become the composition engine.
 
 ## Static description versus executable contract
 
