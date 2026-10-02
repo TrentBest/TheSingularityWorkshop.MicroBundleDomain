@@ -1,6 +1,8 @@
 # TheSingularityWorkshop.MicroBundleDomain
 
-**Turn an independently authored capability into something a composition system can discover, configure, load, and arbitrate — without coupling the capability to the host application.**
+**A neutral contract for independently authored capabilities.**
+
+A **MicroBundle** is a focused unit of capability that can carry its own identity, dependencies, configuration, loading behavior, and composition behavior—without becoming coupled to the application that eventually uses it.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet version](https://img.shields.io/nuget/v/TheSingularityWorkshop.MicroBundleDomain?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
@@ -9,6 +11,135 @@
 [![Code Coverage](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain/graph/badge.svg)](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
 
 ![Opaque MicroBundle Capability Core](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-01.png)
+
+## Start here
+
+If you know almost nothing about MicroBundles, **do not start with the API**.
+
+Start with:
+
+1. **[What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md)** — the five-minute explanation.
+2. **[Adventures](docs/ADVENTURES.md)** — hands-on, step-by-step learning.
+3. **[Getting Started](docs/GETTING_STARTED.md)** — the implementation guide.
+4. **[Ecosystem Guide](docs/ECOSYSTEM.md)** — how Domain, Repository, and composition fit together.
+5. **[Architecture](docs/ARCHITECTURE.md)** — the deeper dependency model.
+
+## What does “Micro” mean?
+
+**Not binary size. Not a microservice. Not a tiny DLL.**
+
+Micro means **focused scope**.
+
+A MicroBundle should represent one coherent capability that can be independently identified, versioned, configured, loaded, and composed.
+
+The capability might be tiny.
+
+It might also have a substantial implementation.
+
+The point is that the **boundary is focused**.
+
+## What is a MicroBundle?
+
+The word *bundle* itself is not new. Software has long used bundles, packages, modules, plugins, and components.
+
+The important part is the contract:
+
+~~~text
+MicroBundle
+  |
+  +-- Identity
+  +-- Version
+  +-- Dependencies
+  +-- Providers
+  +-- Configuration
+  +-- Load
+  +-- Arbitration
+~~~
+
+That contract lets a host work with a capability without learning the capability's internal domain.
+
+## The three questions
+
+The MicroBundle ecosystem deliberately separates:
+
+| Question | Boundary |
+|---|---|
+| **What is this capability?** | MicroBundleDomain |
+| **Where can I get it?** | MicroBundleRepository |
+| **How do I compose it?** | FSM_COS or another composition host |
+
+This is the central idea.
+
+### MicroBundleDomain — what
+
+This package defines the neutral capability contract.
+
+### MicroBundleRepository — where
+
+A repository discovers, retrieves, verifies, caches, and/or materializes capability artifacts.
+
+The repository is **not a dependency of this domain package**.
+
+### Composition host — how
+
+FSM_COS is one composition host. You can build another.
+
+The domain contract does not require a particular composition engine.
+
+## You can build your own MicroBundle ecosystem
+
+This is not a requirement to adopt the entire Singularity Workshop stack.
+
+A third party can create:
+
+~~~text
+Acme.Thermal
+Acme.Materials
+Acme.Rendering
+       |
+       +-- implement MicroBundleDomain
+
+Acme.MicroBundleRepository
+       |
+       +-- uses its own storage/delivery
+
+Acme.CompositionHost
+       |
+       +-- uses its own runtime rules
+~~~
+
+The capabilities remain the author's domain.
+
+The repository remains the author's delivery system.
+
+The composition host remains the author's runtime.
+
+**MicroBundleDomain is the neutral seam connecting them.**
+
+## Why this package exists
+
+Without a common contract, a host tends to accumulate domain knowledge:
+
+~~~text
+if Physics...
+if Thermal...
+if Rendering...
+if AEC...
+if Magic...
+if WhateverComesNext...
+~~~
+
+That does not scale.
+
+With MicroBundleDomain, the host learns one thing:
+
+~~~text
+"I know how to work with an IMicroBundle."
+~~~
+
+A new domain can arrive without teaching the host what that domain means.
+
+---
 
 ## Why would I use this?
 
