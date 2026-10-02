@@ -8,6 +8,13 @@ public sealed class MicroBundleDescriptor
     private readonly IReadOnlyList<MicroBundleDependency> _dependencies;
     private readonly IReadOnlyList<MicroBundleProvider> _providers;
 
+    /// <summary>
+    /// Initializes a MicroBundle descriptor from its portable identity and declared composition surface.
+    /// </summary>
+    /// <param name="id">Stable non-zero identity of the MicroBundle.</param>
+    /// <param name="version">Domain-defined version string for the capability.</param>
+    /// <param name="dependencies">Optional capabilities required by the MicroBundle.</param>
+    /// <param name="providers">Optional opaque provider identifiers exposed by the MicroBundle.</param>
     public MicroBundleDescriptor(
         ulong id,
         string version,
@@ -27,12 +34,24 @@ public sealed class MicroBundleDescriptor
         Version = version;
     }
 
+    /// <summary>
+    /// Gets the stable identity of the MicroBundle.
+    /// </summary>
     public ulong Id { get; }
 
+    /// <summary>
+    /// Gets the version declared by the MicroBundle author.
+    /// </summary>
     public string Version { get; }
 
+    /// <summary>
+    /// Gets the declared dependency identities.
+    /// </summary>
     public IReadOnlyList<MicroBundleDependency> Dependencies => _dependencies;
 
+    /// <summary>
+    /// Gets opaque provider identifiers declared by the MicroBundle.
+    /// </summary>
     public IReadOnlyList<MicroBundleProvider> Providers => _providers;
 
     private static IReadOnlyList<MicroBundleDependency> MaterializeDependencies(
@@ -67,9 +86,11 @@ public sealed class MicroBundleDescriptor
 /// <summary>
 /// Declares a dependency on another MicroBundle without interpreting its domain semantics.
 /// </summary>
+/// <param name="BundleId">Stable identity of the required MicroBundle.</param>
 public readonly record struct MicroBundleDependency(ulong BundleId);
 
 /// <summary>
 /// Identifies a provider exposed by a MicroBundle.
 /// </summary>
+/// <param name="Id">Opaque provider identifier interpreted by the consuming domain.</param>
 public readonly record struct MicroBundleProvider(string Id);
