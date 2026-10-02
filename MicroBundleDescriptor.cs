@@ -8,6 +8,7 @@ public sealed class MicroBundleDescriptor
     private readonly IReadOnlyList<MicroBundleDependency> _dependencies;
     private readonly IReadOnlyList<MicroBundleProvider> _providers;
 
+    /// <summary>Creates a descriptor for a MicroBundle capability.</summary>
     public MicroBundleDescriptor(
         ulong id,
         string version,
@@ -27,12 +28,16 @@ public sealed class MicroBundleDescriptor
         Version = version;
     }
 
+    /// <summary>Gets the stable MicroBundle identity.</summary>
     public ulong Id { get; }
 
+    /// <summary>Gets the declared MicroBundle version.</summary>
     public string Version { get; }
 
+    /// <summary>Gets the declared MicroBundle dependencies.</summary>
     public IReadOnlyList<MicroBundleDependency> Dependencies => _dependencies;
 
+    /// <summary>Gets the providers exposed by the MicroBundle.</summary>
     public IReadOnlyList<MicroBundleProvider> Providers => _providers;
 
     private static IReadOnlyList<MicroBundleDependency> MaterializeDependencies(
