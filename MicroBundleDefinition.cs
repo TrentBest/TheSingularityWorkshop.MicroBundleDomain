@@ -60,8 +60,8 @@ public sealed class MicroBundleDefinition
     {
         var values = (fields ?? []).ToArray();
 
-        if (values.Any(x => string.IsNullOrWhiteSpace(x.Name)))
-            throw new ArgumentException("A MicroBundle field requires a name.", nameof(fields));
+        if (values.Any(x => x is null || string.IsNullOrWhiteSpace(x.Name)))
+            throw new ArgumentException("A MicroBundle field requires a non-null name.", nameof(fields));
 
         if (values.Select(x => x.Name).Distinct(StringComparer.Ordinal).Count() != values.Length)
             throw new ArgumentException("A MicroBundle cannot declare the same field more than once.", nameof(fields));
@@ -151,8 +151,8 @@ public sealed class MicroBundleField
     {
         var values = (children ?? []).ToArray();
 
-        if (values.Any(x => string.IsNullOrWhiteSpace(x.Name)))
-            throw new ArgumentException("A nested MicroBundle field requires a name.", nameof(children));
+        if (values.Any(x => x is null || string.IsNullOrWhiteSpace(x.Name)))
+            throw new ArgumentException("A nested MicroBundle field requires a non-null name.", nameof(children));
 
         if (values.Select(x => x.Name).Distinct(StringComparer.Ordinal).Count() != values.Length)
             throw new ArgumentException("A MicroBundle object cannot declare the same child field more than once.", nameof(children));
