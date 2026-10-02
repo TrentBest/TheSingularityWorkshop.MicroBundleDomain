@@ -11,7 +11,7 @@ public sealed class MicroBundleRuntimeContractTests
         var bundle = new TestBundle();
 
         Assert.Equal(42UL, bundle.Descriptor.Id);
-        Assert.Equal(42UL, bundle.Id);
+        Assert.Equal(42UL, ((IMicroBundle)bundle).Id);
         Assert.Single(bundle.Dependencies);
         Assert.Equal(7UL, bundle.Dependencies[0].BundleId);
         Assert.Equal("test", bundle.Descriptor.Version);
