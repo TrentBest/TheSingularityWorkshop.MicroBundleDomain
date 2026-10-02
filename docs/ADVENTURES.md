@@ -93,3 +93,10 @@ Application / Experience
 ```
 
 That is the whole game.
+
+
+## Adventure 7 — From Artifact to Runtime
+
+Follow a capability through authoring, repository materialization, composition, and runtime presentation.
+
+[Start Adventure 7](adventures/07-artifact-to-runtime.md)
