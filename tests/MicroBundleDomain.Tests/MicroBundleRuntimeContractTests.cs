@@ -1,4 +1,5 @@
 using TheSingularityWorkshop.MicroBundleDomain;
+using Xunit;
 
 namespace MicroBundleDomain.Tests;
 
