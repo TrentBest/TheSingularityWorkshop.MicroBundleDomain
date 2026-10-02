@@ -18,6 +18,33 @@ A composable capability system has three separate questions:
 
 Confusing these questions creates the coupling this package exists to prevent.
 
+## The portable MicroBundle core
+
+For the capability ecosystem itself, keep the foundation small:
+
+~~~text
+MicroBundleDomain
+       ^
+       |
+MicroBundleRepository
+~~~
+
+MicroBundleDomain defines **what** a capability is.
+
+A repository implementation handles **where** the capability comes from.
+
+A composition host is an additional consumer that answers **how** capabilities become a runtime.
+
+This means a third party can replace the repository and composition host without replacing the domain contract.
+
+The important distinction is:
+
+- **Domain is required to author a MicroBundle.**
+- **Repository is required only when delivery/discovery/materialization is needed.**
+- **FSM_COS is one composition implementation, not part of the domain definition.**
+
+That is why MicroBundleDomain has no dependency on the repository.
+
 ## 1. MicroBundleDomain: meaning
 
 The domain package owns the semantic and executable contract:
