@@ -1,5 +1,21 @@
 # MicroBundle Domain Theory
 
+## What "Micro" means
+
+**Micro describes scope, not binary size.**
+
+A MicroBundle is a focused capability boundary. It may contain a small implementation or a substantial one. The useful property is that the capability can be identified, versioned, configured, loaded, and composed independently.
+
+Do not confuse this with a microservice. A MicroBundle can live entirely inside one process.
+
+The word *bundle* is also not a claim of invention. Bundles, modules, packages, plugins, and components are established software concepts. The distinct value here is the particular contract and the separation of:
+
+~~~text
+what  -> MicroBundleDomain
+where -> MicroBundleRepository
+how   -> composition host
+~~~
+
 ## The MicroBundle as a semantic atom
 
 The MicroBundle is the unit by which a capability enters the FSM ecosystem.
