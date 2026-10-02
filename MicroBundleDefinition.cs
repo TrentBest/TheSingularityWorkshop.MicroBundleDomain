@@ -166,9 +166,18 @@ public sealed class MicroBundleField
 /// </summary>
 public enum MicroBundleFieldKind
 {
+    /// <summary>Text/string value.</summary>
     String,
+
+    /// <summary>Integral numeric value.</summary>
     Integer,
+
+    /// <summary>Floating-point numeric value.</summary>
     Float,
+
+    /// <summary>Boolean value.</summary>
     Boolean,
+
+    /// <summary>Nested object value containing child fields.</summary>
     Object
 }
