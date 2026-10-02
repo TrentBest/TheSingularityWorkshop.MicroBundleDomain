@@ -58,4 +58,41 @@ public sealed class MicroBundleDefinitionTests
                     new MicroBundleField("Value", MicroBundleFieldKind.Float)
                 ]));
     }
+    [Fact]
+    public void Definition_RejectsNullField()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new MicroBundleDefinition(
+                "Hydrogen",
+                new MicroBundleDescriptor(42, "1.0.0"),
+                new MicroBundleField?[] { null }));
+    }
+
+    [Fact]
+    public void Field_RejectsReversedNumericBounds()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new MicroBundleField(
+                "AtomicNumber",
+                MicroBundleFieldKind.Integer,
+                minimum: 118,
+                maximum: 1));
+    }
+
+    [Fact]
+    public void Field_RequiresBothNumericBounds_whenEitherIsProvided()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new MicroBundleField(
+                "AtomicNumber",
+                MicroBundleFieldKind.Integer,
+                minimum: 1));
+
+        Assert.Throws<ArgumentException>(() =>
+            new MicroBundleField(
+                "AtomicNumber",
+                MicroBundleFieldKind.Float,
+                maximum: 118));
+    }
+
 }
