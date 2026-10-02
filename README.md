@@ -23,6 +23,9 @@ Start with:
 3. **[Getting Started](docs/GETTING_STARTED.md)** — the implementation guide.
 4. **[Ecosystem Guide](docs/ECOSYSTEM.md)** — how Domain, Repository, and composition fit together.
 5. **[Architecture](docs/ARCHITECTURE.md)** — the deeper dependency model.
+6. **[FAQ](docs/FAQ.md)** — practical questions and objections.
+7. **[Glossary](docs/GLOSSARY.md)** — shared vocabulary.
+8. **[Knowledge Model](docs/KNOWLEDGE_MODEL.md)** — how the documentation can grow into a structured knowledge surface.
 
 ## What does “Micro” mean?
 
