@@ -1,146 +1,427 @@
 # TheSingularityWorkshop.MicroBundleDomain
 
-**Domain-side foundation for MicroBundle identity, composition metadata, and runtime contracts.**
+**Turn an independently authored capability into something a composition system can discover, configure, load, and arbitrate — without coupling the capability to the host application.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet version](https://img.shields.io/nuget/v/TheSingularityWorkshop.MicroBundleDomain?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
 [![NuGet downloads](https://img.shields.io/nuget/dt/TheSingularityWorkshop.MicroBundleDomain?logo=nuget&style=flat-square)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/TrentBest/TheSingularityWorkshop.MicroBundleDomain/package.yml?branch=master&style=flat-square&logo=github)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/workflows/build.yml)
-[![Last commit](https://img.shields.io/github/last-commit/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/commits/master)
 [![Code Coverage](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain/graph/badge.svg)](https://codecov.io/gh/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
 
 ![Opaque MicroBundle Capability Core](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-01.png)
 
-A MicroBundle is a **loadable semantic capability**.
+## Why would I use this?
 
-This repository provides the domain-side meaning and executable contract of a MicroBundle without owning storage, transport, or composition orchestration.
+If you build a modular application, you eventually hit the same problem:
 
-## Ownership boundary
+> **How do I let a capability bring its own identity, dependencies, configuration, loading behavior, and composition behavior without teaching my host application what that capability means?**
+
+Without a shared domain contract, the host starts accumulating knowledge:
+
+```text
+if bundle is Physics...
+if bundle is Rendering...
+if bundle is REST...
+if bundle is AEC...
+if bundle is Magic...
+```
+
+Every new capability becomes another host-specific integration.
+
+**MicroBundleDomain moves that responsibility to the capability itself.**
+
+A MicroBundle can describe what it is, declare what it needs, accept host-provided configuration, load itself, and participate in composition arbitration. The host only needs to understand the contract.
+
+That gives you a clean separation:
+
+```text
+Your domain package
+      │
+      │ defines meaning + behavior
+      ▼
+MicroBundleDomain
+      │
+      │ provides the neutral contract
+      ▼
+Your composition host
+      │
+      │ decides how capabilities are assembled
+      ▼
+Your application / Experience
+```
+
+**It is the seam that lets your domain remain yours.**
+
+---
+
+## What you actually get
+
+| Contract | What it gives you |
+|---|---|
+| `IMicroBundle` | A stable executable lifecycle for a capability |
+| `MicroBundleDescriptor` | Identity, version, dependencies, and provider declarations |
+| `MicroBundleDependencyRequest` | A dependency request plus optional configuration bytes |
+| `MicroBundleDefinition` | An editor/tooling-facing description of configurable data |
+| `MicroBundleField` | Recursive, inspectable configuration schema |
+| `IMicroBundleLoadContext` | Host-neutral configuration access during loading |
+| `IMicroBundleArbitrationContext` | Host-neutral access to the current composition during arbitration |
+
+That is intentionally small.
+
+This package does **not** try to become your storage system, REST client, renderer, GUI framework, application host, or composition engine. Those are separate concerns.
+
+---
+
+## The 30-second example
+
+Suppose you are building a **ThermalCapability**.
+
+You do not want FSM_COS, a desktop application, a browser, or a future distributed host to know what "thermal capability" means.
+
+Your package can own that meaning:
+
+```csharp
+using TheSingularityWorkshop.MicroBundleDomain;
+
+public sealed class ThermalCapability : IMicroBundle
+{
+    public MicroBundleDescriptor Descriptor { get; } =
+        new(
+            id: 4201,
+            version: "1.0.0",
+            providers:
+            [
+                new MicroBundleProvider("thermal")
+            ]);
+
+    public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
+        [];
+
+    public void Load(IMicroBundleLoadContext context)
+    {
+        // Read configuration supplied by the host.
+        // Install your thermal capability into your own runtime state.
+    }
+
+    public bool Arbitrate(
+        IMicroBundleArbitrationContext context,
+        int roundIndex)
+    {
+        // Reconcile this capability with the other capabilities
+        // participating in the composition.
+        return false;
+    }
+}
+```
+
+The important part is what **isn't** here.
+
+There is no FSM_COS, WebPage, WPF, Blazor, REST, Azure, renderer, or application-specific base-class dependency.
+
+Your capability stays portable. A composition host can consume it later.
+
+---
+
+## What problem does the lifecycle solve?
+
+A plain interface can tell you that a class has methods. It does not establish the **meaning of the boundary**.
+
+MicroBundleDomain establishes a deliberately constrained lifecycle:
+
+```text
+          Descriptor
+              │
+              ▼
+      "What capability is this?"
+              │
+              ▼
+        Dependencies
+              │
+              ▼
+      "What must exist first?"
+              │
+              ▼
+             Load
+              │
+              ▼
+      "Install into this runtime."
+              │
+              ▼
+          Arbitration
+              │
+              ▼
+      "Reconcile with the
+       assembled composition."
+```
+
+The package gives every participating capability the same vocabulary without forcing every capability into the same implementation.
+
+---
+
+## Why not just put this in the host?
+
+Because that reverses the dependency.
+
+The intended direction is:
 
 ```text
 MicroBundleDomain
-    identity / version / dependencies / providers
-    definition / schema / executable IMicroBundle contract
-          |
-          v
-MicroBundleRepository
-    artifact identity / immutable bytes / storage / retrieval
-          |
-          v
-FSM_COS
-    manifest execution / dependency traversal / arbitration / RuntimeAssembly
+      ▲
+      │
+domain packages implement it
+      ▲
+      │
+composition hosts consume it
 ```
 
-**MicroBundleDomain defines what a MicroBundle is. MicroBundleRepository stores and retrieves its artifact representation. FSM_COS composes requested capabilities.**
+Not:
 
-## What belongs here
+```text
+FSM_COS
+  ▲
+  │
+every domain package
+```
 
-The first contract is deliberately narrow:
+If your domain package has to reference the composition engine merely to become composable, the supposedly independent domain has already become host-dependent.
 
-~~~text
-MicroBundleDescriptor
-    ├── identity
-    ├── version
-    ├── dependencies
-    └── providers
-~~~
+**MicroBundleDomain is the neutral seam that prevents that.**
 
-The descriptor records composition facts. It does not implement a domain such as atoms, thermal properties, meshes, logic gates, or AEC.
+---
 
-### Dependencies
+## Where it fits
 
-A dependency declares that another MicroBundle is part of the capability's composition.
+MicroBundleDomain is the **meaning and executable contract**.
 
-### Providers
+MicroBundleRepository is the **artifact boundary**.
 
-A provider is identified but not interpreted here.
+FSM_COS is the **composition engine**.
 
-For example, a domain package may choose to expose providers named `preview`, `mesh`, or something completely different. This package does not assign semantics to those names.
+```text
+                 Author
+                   │
+                   ▼
+          Domain MicroBundle
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │  MicroBundleDomain  │
+        │                     │
+        │ identity            │
+        │ version             │
+        │ dependencies        │
+        │ providers           │
+        │ definition          │
+        │ executable contract │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │ MicroBundleRepository│
+        │                     │
+        │ artifact storage    │
+        │ retrieval           │
+        │ materialization     │
+        └──────────┬──────────┘
+                   │
+                   ▼
+        ┌─────────────────────┐
+        │       FSM_COS       │
+        │                     │
+        │ manifest            │
+        │ dependency closure  │
+        │ loading             │
+        │ arbitration         │
+        │ RuntimeAssembly     │
+        └──────────┬──────────┘
+                   │
+          ┌────────┼────────┐
+          ▼        ▼        ▼
+       WebApp    AnyApp   Other Host
+```
 
-That keeps the ecosystem blind to domain meaning.
+**The repository knows where the capability is.  
+The domain knows what the capability is.  
+The composition engine decides how capabilities become a runtime.**
 
-## Code-derived MicroBundles
+That separation is the point.
 
-A domain package may define executable behavior in code and expose its composition metadata through this foundation.
+---
 
-~~~text
-Code defines the capability.
-MicroBundleDomain describes the capability.
-FSM_COS composes the capability.
-Forge authors the composition.
-Hosting persists and distributes it.
-GUI manifests it.
-~~~
+## Code-defined or data-driven?
 
-The layers remain separate.
+The domain contract supports both.
 
-## Demand-driven composition
+### Code-defined capability
 
-Optional capabilities remain optional.
+A package can ship executable behavior:
 
-A bundle that declares no dependencies or providers can stand alone. A richer bundle can declare only the capabilities it needs. The runtime can then resolve and load the resulting composition rather than pulling an entire domain into memory.
+```text
+Assembly
+   │
+   └── IMicroBundle implementation
+```
 
-## Geometry as a compatibility surface
+Useful when the capability contains algorithms, runtime behavior, or integration logic.
 
-The Forge metaphor makes compatibility visible: a state shell exposes a transition surface, while a condition supplies the shape that can fit it.
+### Data-defined capability
 
-![Forge geometry compatibility surface](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-02.png)
+The descriptor and definition can describe semantic/configuration data:
 
-The geometry is not the runtime itself. It is a manifestation of the contracts that determine whether a capability can compose.
+```text
+MicroBundleDefinition
+   ├── name
+   ├── identity/version
+   └── fields
+       ├── value
+       ├── limits
+       └── nested fields
+```
 
-## Relationship to FSM_COS
+Useful for tooling, editors, manifests, generated controls, and systems that need to inspect a capability without understanding its implementation.
 
-FSM_COS owns runtime composition, but it does not own the MicroBundle contract. The executable `IMicroBundle` contract belongs to this domain package. FSM_COS supplies concrete host contexts when it performs composition.
+### Both together
 
-~~~text
-Domain MicroBundle
-       |
-       v
-MicroBundleDomain
-       |
-       v
-    FSM_COS
-       |
-       v
- RuntimeAssembly
-~~~
+```text
+Definition       → tells tooling what can be configured
+Implementation   → performs the capability
+Composition host → decides when and where it participates
+```
 
-The descriptor and definition describe the capability, while `IMicroBundle` defines the executable capability contract. Host contexts remain neutral so the domain package does not depend on FSM_COS.
+---
 
-## Packaging
+## Dependencies are capability declarations
+
+A dependency is not a reference to an application subsystem.
+
+It is a declaration:
+
+> "This capability requires capability X to participate in its composition."
+
+For example:
+
+```text
+Thermal
+   │
+   └── requires → Material
+                      │
+                      └── requires → Element
+```
+
+The dependency graph can therefore be assembled from the capabilities themselves. The host does not need a hard-coded table of domain-specific dependencies.
+
+That is what makes demand-driven composition possible.
+
+---
+
+## Configuration stays opaque to the domain package
+
+`MicroBundleDependencyRequest` carries optional `ReadOnlyMemory<byte>` configuration.
+
+MicroBundleDomain intentionally does not dictate whether those bytes represent binary data, a compact protocol, serialized configuration, generated data, or something defined by another package.
+
+**The domain contract provides the boundary. Your serialization/protocol choice remains yours.**
+
+---
+
+## The editor/tooling boundary
+
+`MicroBundleDefinition` exists for systems that need to **inspect and author** a capability without executing it.
+
+```text
+MicroBundleDefinition
+       │
+       ├── String
+       ├── Integer [min/max]
+       ├── Float   [min/max]
+       ├── Boolean
+       └── Object
+             ├── child
+             └── child
+```
+
+A GUI adapter can turn those semantic categories into controls. A manifest editor can turn them into fields. A tooling package can validate them.
+
+MicroBundleDomain does not decide whether the result is Blazor, WPF, web, desktop, terminal, or something that does not exist yet.
+
+---
+
+## What this package deliberately does NOT do
+
+This is important because it defines the value of the package.
+
+- **It does not store MicroBundles.** Use a repository/storage layer.
+- **It does not execute manifests.** That belongs to a composition engine such as FSM_COS.
+- **It does not know REST.** REST is a transport concern.
+- **It does not know Azure.** Cloud storage is an implementation concern.
+- **It does not know GUI.** GUI is a manifestation concern.
+- **It does not know Unity, WPF, or Blazor.** Those are host/platform concerns.
+- **It does not define your domain.** A thermal bundle remains thermal because **you** define it as thermal.
+
+The package gives that capability a common compositional boundary without taking ownership of the capability itself.
+
+---
+
+## When should you use it?
+
+Use MicroBundleDomain when you need capabilities that are:
+
+- independently authored
+- independently versioned
+- discoverable by identity
+- composable through declared dependencies
+- configurable by a host
+- loadable without host-specific contracts
+- able to participate in composition arbitration
+- inspectable by tooling
+- portable across different manifestations
+
+You probably **do not** need it for a conventional monolithic application where every feature is compiled directly into one host and there is no need for independent composition.
+
+That is intentional.
+
+---
+
+## Documentation
+
+- **[Getting Started](docs/GETTING_STARTED.md)** — build your first MicroBundle and understand the lifecycle.
+- **[Architecture](docs/ARCHITECTURE.md)** — understand ownership, dependency direction, and host integration.
+- **[MicroBundle Domain Theory](docs/THEORY.md)** — understand the reasoning behind the model.
+
+---
+
+## Version and package status
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Source correction:** `2.0.0-alpha.1`  
+**Corrected source:** `2.0.0-alpha.1`  
 **Target:** .NET 8  
 **License:** MIT
 
-Concrete domain families should remain separately owned and publishable.
+The repository previously published a `1.0.0` package before the ownership boundary was finalized. That package is immutable on NuGet.
 
-The corrected contract is staged as `2.0.0-alpha.1` because moving the executable MicroBundle contract into the domain package is a structural ownership correction.
+The current source corrects the ownership model by making the executable MicroBundle contract domain-owned. The corrected `2.0.0-alpha.1` source is staged for review; publication is a separate release decision.
 
-## Status
+---
 
-The repository was published as `1.0.0` before the ownership boundary was finalized. That publication was premature. NuGet's immutability means published `1.0.0` cannot be replaced in place, so this repository records the correction rather than pretending the historical package does not exist. No release is implied by this source correction.
+## Related ecosystem
 
-See [MicroBundle Domain Theory](docs/THEORY.md).
+- [FSM_API](https://github.com/TrentBest/FSM_API) — low-level state foundation
+- [FSM_COS](https://github.com/TrentBest/TheSingularityWorkshop.FSM_COS) — composition and runtime assembly
+- [MicroBundleRepository](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository) — artifact storage/retrieval boundary
+- [FSM_REST](https://github.com/TrentBest/TheSingularityWorkshop.FSM_REST) — REST capability/transport boundary
+
+---
 
 ![Trent Best](https://avatars.githubusercontent.com/u/16405167?v=4&size=200)
 
 ---
 
-## 🔗 Resources & Support
+## Resources & Support
 
-### 📦 Related packages
-
-- [TheSingularityWorkshop.FSM_API](https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API)
-- [TheSingularityWorkshop.MicroBundleRepository](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository)
-- [TheSingularityWorkshop.FSM_COS](https://github.com/TrentBest/TheSingularityWorkshop.FSM_COS)
-- [TheSingularityWorkshop.MicroBundleDomain](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
-
-### 💖 Support The Singularity Workshop
-
-- **Patreon:** [Support us on Patreon](https://www.patreon.com/c/TheSingularityWorkshop)
-- **PayPal:** [Make a donation](https://www.paypal.com/donate/?hosted_button_id=3Z7263LCQMV9J)
+- **NuGet:** [TheSingularityWorkshop.MicroBundleDomain](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
+- **GitHub:** [TheSingularityWorkshop.MicroBundleDomain](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
+- **Patreon:** [Support The Singularity Workshop](https://www.patreon.com/c/TheSingularityWorkshop)
+- **PayPal:** [Support The Singularity Workshop](https://www.paypal.com/donate/?hosted_button_id=3Z7263LCQMV9J)
 
 <p align="center">
   <a href="https://github.com/TrentBest/FSM_API">
