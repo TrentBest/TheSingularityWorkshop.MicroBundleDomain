@@ -1,6 +1,6 @@
 # TheSingularityWorkshop.MicroBundleDomain
 
-**Domain-side foundation for MicroBundle definitions.**
+**Domain-side foundation for MicroBundle identity, composition metadata, and runtime contracts.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet version](https://img.shields.io/nuget/v/TheSingularityWorkshop.MicroBundleDomain?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
@@ -13,7 +13,25 @@
 
 A MicroBundle is a **loadable semantic capability**.
 
-This repository provides the small, reusable domain-side descriptors needed to identify a MicroBundle and declare its composition surface without teaching the hosting ecosystem what the capability means.
+This repository provides the domain-side meaning and executable contract of a MicroBundle without owning storage, transport, or composition orchestration.
+
+## Ownership boundary
+
+```text
+MicroBundleDomain
+    identity / version / dependencies / providers
+    definition / schema / executable IMicroBundle contract
+          |
+          v
+MicroBundleRepository
+    artifact identity / immutable bytes / storage / retrieval
+          |
+          v
+FSM_COS
+    manifest execution / dependency traversal / arbitration / RuntimeAssembly
+```
+
+**MicroBundleDomain defines what a MicroBundle is. MicroBundleRepository stores and retrieves its artifact representation. FSM_COS composes requested capabilities.**
 
 ## What belongs here
 
@@ -72,7 +90,7 @@ The geometry is not the runtime itself. It is a manifestation of the contracts t
 
 ## Relationship to FSM_COS
 
-FSM_COS owns runtime composition. This package owns domain-side description.
+FSM_COS owns runtime composition, but it does not own the MicroBundle contract. The executable `IMicroBundle` contract belongs to this domain package. FSM_COS supplies concrete host contexts when it performs composition.
 
 ~~~text
 Domain MicroBundle
@@ -87,20 +105,22 @@ MicroBundleDomain
  RuntimeAssembly
 ~~~
 
-The descriptor is not a replacement for `IMicroBundle`. It is metadata that a domain package can use while implementing or generating runtime MicroBundles.
+The descriptor and definition describe the capability, while `IMicroBundle` defines the executable capability contract. Host contexts remain neutral so the domain package does not depend on FSM_COS.
 
 ## Packaging
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Version:** `1.0.0`  
+**Source correction:** `2.0.0-alpha.1`  
 **Target:** .NET 8  
 **License:** MIT
 
 Concrete domain families should remain separately owned and publishable.
 
+The corrected contract is staged as `2.0.0-alpha.1` because moving the executable MicroBundle contract into the domain package is a structural ownership correction.
+
 ## Status
 
-This is a stable `1.0.0` foundation. The contract is intentionally small so that WebPage can consume domain packages without the hosting layer accumulating domain-specific assumptions.
+The repository was published as `1.0.0` before the ownership boundary was finalized. That publication was premature. NuGet's immutability means published `1.0.0` cannot be replaced in place, so this repository records the correction rather than pretending the historical package does not exist. No release is implied by this source correction.
 
 See [MicroBundle Domain Theory](docs/THEORY.md).
 
@@ -110,12 +130,12 @@ See [MicroBundle Domain Theory](docs/THEORY.md).
 
 ## 🔗 Resources & Support
 
-### 📦 Get FSM_API
+### 📦 Related packages
 
-- **Unity Asset Store:** [FSM_API for Unity](https://assetstore.unity.com/packages/slug/332450)
-- **Core NuGet:** [TheSingularityWorkshop.FSM_API](https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API)
-- **Source Code:** [TheSingularityWorkshop.MicroBundleDomain on GitHub](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
-- **This Package:** [TheSingularityWorkshop.MicroBundleDomain](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
+- [TheSingularityWorkshop.FSM_API](https://www.nuget.org/packages/TheSingularityWorkshop.FSM_API)
+- [TheSingularityWorkshop.MicroBundleRepository](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository)
+- [TheSingularityWorkshop.FSM_COS](https://github.com/TrentBest/TheSingularityWorkshop.FSM_COS)
+- [TheSingularityWorkshop.MicroBundleDomain](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain)
 
 ### 💖 Support The Singularity Workshop
 
