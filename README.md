@@ -102,7 +102,9 @@ Concrete domain families should remain separately owned and publishable.
 
 This is a stable `1.0.0` foundation. The contract is intentionally small so that WebPage can consume domain packages without the hosting layer accumulating domain-specific assumptions.
 
-See [MicroBundle Domain Theory](docs/THEORY.md).
+See [MicroBundle Domain Theory](docs/THEORY.md) for the architectural rationale.
+
+See [MicroBundle Ecosystem Guide](docs/ECOSYSTEM.md) for creating an independent MicroBundle ecosystem, operating a repository, and participating in a human-controlled federation.
 
 ![Trent Best](https://avatars.githubusercontent.com/u/16405167?v=4&size=200)
 
