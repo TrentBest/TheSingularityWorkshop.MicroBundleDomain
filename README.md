@@ -2,7 +2,7 @@
 
 **A neutral contract for independently authored capabilities.**
 
-A **MicroBundle** is a focused unit of capability that can carry its own identity, dependencies, configuration, loading behavior, and composition behavior—without becoming coupled to the application that eventually uses it.
+A **MicroBundle** is a focused unit of capability that can carry its own identity, dependencies, configuration, loading behavior, and participation in composition—without becoming coupled to the application or composition host that eventually uses it.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet version](https://img.shields.io/nuget/v/TheSingularityWorkshop.MicroBundleDomain?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
@@ -119,6 +119,8 @@ The composition host remains the author's runtime.
 
 **MicroBundleDomain is the neutral seam connecting them.**
 
+The capability owns its meaning and lifecycle participation. The composition host owns the composition process itself: dependency resolution, ordering, arbitration rounds, convergence, and the resulting runtime assembly.
+
 ## Why this package exists
 
 Without a common contract, a host tends to accumulate domain knowledge:
@@ -164,7 +166,7 @@ Every new capability becomes another host-specific integration.
 
 **MicroBundleDomain moves that responsibility to the capability itself.**
 
-A MicroBundle can describe what it is, declare what it needs, accept host-provided configuration, load itself, and participate in composition arbitration. The host only needs to understand the contract.
+A MicroBundle can describe what it is, declare what it needs, accept host-provided configuration, load itself, and participate in host-driven composition arbitration. The host still owns the composition process and only needs to understand the contract.
 
 That gives you a clean separation:
 
@@ -187,6 +189,21 @@ Your application / Experience
 **It is the seam that lets your domain remain yours.**
 
 ---
+
+## Two complementary contracts
+
+MicroBundleDomain deliberately contains two related contracts for two different consumers:
+
+| Contract | Primary consumer | Purpose |
+|---|---|---|
+| **Runtime contract** | Composition hosts | Describe, load, and arbitrate executable capabilities. |
+| **Description contract** | Editors and tooling | Inspect and author configurable capability structure without executing it. |
+
+The runtime side is centered on `IMicroBundle`, `MicroBundleDescriptor`, `MicroBundleDependencyRequest`, `IMicroBundleLoadContext`, and `IMicroBundleArbitrationContext`.
+
+The description side is centered on `MicroBundleDefinition` and `MicroBundleField`.
+
+They share identity information deliberately, but they are not interchangeable representations of the same thing. A runtime host needs an executable capability; tooling needs an inspectable schema.
 
 ## What you actually get
 
@@ -233,16 +250,16 @@ public sealed class ThermalCapability : IMicroBundle
 
     public void Load(IMicroBundleLoadContext context)
     {
-        // Read configuration supplied by the host.
-        // Install your thermal capability into your own runtime state.
+        // Configuration is opaque to MicroBundleDomain; Thermal interprets it.
+        // Example: a domain-specific configuration format could provide a target temperature.
     }
 
     public bool Arbitrate(
         IMicroBundleArbitrationContext context,
         int roundIndex)
     {
-        // Reconcile this capability with the other capabilities
-        // participating in the composition.
+        // Inspect the composition and reconcile Thermal with participating capabilities.
+        // The host controls the round loop; return true only when another round is needed.
         return false;
     }
 }
