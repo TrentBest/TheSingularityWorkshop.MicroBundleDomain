@@ -2,7 +2,7 @@
 
 **A neutral contract for independently authored capabilities.**
 
-A **MicroBundle** is a focused unit of capability that can carry its own identity, dependencies, configuration, loading behavior, and participation in composition—without becoming coupled to the application or composition host that eventually uses it.
+> **A MicroBundle is a focused capability that can identify itself, declare what it needs, accept configuration, enter a runtime, and participate in composition without requiring the host to understand its private domain.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NuGet version](https://img.shields.io/nuget/v/TheSingularityWorkshop.MicroBundleDomain?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/TheSingularityWorkshop.MicroBundleDomain)
@@ -12,20 +12,55 @@ A **MicroBundle** is a focused unit of capability that can carry its own identit
 
 ![Opaque MicroBundle Capability Core](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-01.png)
 
+## Before the code: what is the idea?
+
+If you are not a developer, **you can still start here**.
+
+Imagine a workshop full of capabilities: thermal behavior, materials, rendering, language, structural analysis, sensors, business rules, or something nobody has invented yet.
+
+A MicroBundle gives one capability a boundary that lets it say:
+
+~~~text
+Who am I?
+What version am I?
+What do I require?
+What do I expose?
+How do I enter a runtime?
+How do I react to the capabilities around me?
+~~~
+
+The larger system can work with that common boundary without learning the private meaning of every capability.
+
+**That is the idea before it is an API.**
+
+## Who is this for?
+
+| If you are... | Start here |
+|---|---|
+| **Curious** | [What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md) |
+| **A non-coder** | [What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md), then [Adventures](docs/ADVENTURES.md) |
+| **A developer** | [Getting Started](docs/GETTING_STARTED.md) |
+| **An architect** | [Architecture](docs/ARCHITECTURE.md) and [Ecosystem Guide](docs/ECOSYSTEM.md) |
+| **A toolmaker** | [Description contract](docs/ARCHITECTURE.md), [Adventures](docs/ADVENTURES.md) |
+| **A researcher / knowledge designer** | [Knowledge Model](docs/KNOWLEDGE_MODEL.md) and [Theory](docs/THEORY.md) |
+| **Someone evaluating the idea** | [FAQ](docs/FAQ.md), [What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md), then the architecture |
+
+You do not need to read everything in order.
+
+The documentation is deliberately a **body of knowledge with multiple entry points**, not one giant technical page.
+
 ## Start here
 
 If you know almost nothing about MicroBundles, **do not start with the API**.
 
-Start with:
-
-1. **[What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md)** — the five-minute explanation.
-2. **[Adventures](docs/ADVENTURES.md)** — hands-on, step-by-step learning.
-3. **[Getting Started](docs/GETTING_STARTED.md)** — the implementation guide.
-4. **[Ecosystem Guide](docs/ECOSYSTEM.md)** — how Domain, Repository, and composition fit together.
-5. **[Architecture](docs/ARCHITECTURE.md)** — the deeper dependency model.
+1. **[What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md)** — plain-language explanation; no code required.
+2. **[Adventures](docs/ADVENTURES.md)** — progressive learning from idea to ecosystem.
+3. **[Getting Started](docs/GETTING_STARTED.md)** — implementation guide.
+4. **[Ecosystem Guide](docs/ECOSYSTEM.md)** — what / where / how.
+5. **[Architecture](docs/ARCHITECTURE.md)** — ownership and dependency direction.
 6. **[FAQ](docs/FAQ.md)** — practical questions and objections.
-7. **[Glossary](docs/GLOSSARY.md)** — shared vocabulary.
-8. **[Knowledge Model](docs/KNOWLEDGE_MODEL.md)** — how the documentation can grow into a structured knowledge surface.
+7. **[Glossary](docs/GLOSSARY.md)** — stable vocabulary.
+8. **[Knowledge Model](docs/KNOWLEDGE_MODEL.md)** — how the documentation relates to a future structured knowledge domain.
 
 ## What does “Micro” mean?
 
@@ -172,17 +207,17 @@ That gives you a clean separation:
 
 ```text
 Your domain package
-      │
-      │ defines meaning + behavior
-      ▼
+      |
+      | defines meaning + behavior
+      v
 MicroBundleDomain
-      │
-      │ provides the neutral contract
-      ▼
+      |
+      | provides the neutral contract
+      v
 Your composition host
-      │
-      │ decides how capabilities are assembled
-      ▼
+      |
+      | decides how capabilities are assembled
+      v
 Your application / Experience
 ```
 
@@ -251,7 +286,6 @@ public sealed class ThermalCapability : IMicroBundle
     public void Load(IMicroBundleLoadContext context)
     {
         // Configuration is opaque to MicroBundleDomain; Thermal interprets it.
-        // Example: a domain-specific configuration format could provide a target temperature.
     }
 
     public bool Arbitrate(
@@ -259,7 +293,6 @@ public sealed class ThermalCapability : IMicroBundle
         int roundIndex)
     {
         // Inspect the composition and reconcile Thermal with participating capabilities.
-        // The host controls the round loop; return true only when another round is needed.
         return false;
     }
 }
@@ -281,26 +314,26 @@ MicroBundleDomain establishes a deliberately constrained lifecycle:
 
 ```text
           Descriptor
-              │
-              ▼
+              |
+              v
       "What capability is this?"
-              │
-              ▼
+              |
+              v
         Dependencies
-              │
-              ▼
+              |
+              v
       "What must exist first?"
-              │
-              ▼
+              |
+              v
              Load
-              │
-              ▼
+              |
+              v
       "Install into this runtime."
-              │
-              ▼
+              |
+              v
           Arbitration
-              │
-              ▼
+              |
+              v
       "Reconcile with the
        assembled composition."
 ```
@@ -317,11 +350,11 @@ The intended direction is:
 
 ```text
 MicroBundleDomain
-      ▲
-      │
+      ^
+      |
 domain packages implement it
-      ▲
-      │
+      ^
+      |
 composition hosts consume it
 ```
 
@@ -329,8 +362,8 @@ Not:
 
 ```text
 FSM_COS
-  ▲
-  │
+  ^
+  |
 every domain package
 ```
 
@@ -350,44 +383,44 @@ FSM_COS is the **composition engine**.
 
 ```text
                  Author
-                   │
-                   ▼
+                   |
+                   v
           Domain MicroBundle
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │  MicroBundleDomain  │
-        │                     │
-        │ identity            │
-        │ version             │
-        │ dependencies        │
-        │ providers           │
-        │ definition          │
-        │ executable contract │
-        └──────────┬──────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │ MicroBundleRepository│
-        │                     │
-        │ artifact storage    │
-        │ retrieval           │
-        │ materialization     │
-        └──────────┬──────────┘
-                   │
-                   ▼
-        ┌─────────────────────┐
-        │       FSM_COS       │
-        │                     │
-        │ manifest            │
-        │ dependency closure  │
-        │ loading             │
-        │ arbitration         │
-        │ RuntimeAssembly     │
-        └──────────┬──────────┘
-                   │
-          ┌────────┼────────┐
-          ▼        ▼        ▼
+                   |
+                   v
+        +---------------------+
+        |  MicroBundleDomain  |
+        |                     |
+        | identity            |
+        | version             |
+        | dependencies        |
+        | providers           |
+        | definition          |
+        | executable contract |
+        +----------+----------+
+                   |
+                   v
+        +---------------------+
+        | MicroBundleRepository|
+        |                     |
+        | artifact storage    |
+        | retrieval           |
+        | materialization     |
+        +----------+----------+
+                   |
+                   v
+        +---------------------+
+        |       FSM_COS       |
+        |                     |
+        | manifest            |
+        | dependency closure  |
+        | loading             |
+        | arbitration         |
+        | RuntimeAssembly     |
+        +----------+----------+
+                   |
+          +--------+--------+
+          v        v        v
        WebApp    AnyApp   Other Host
 ```
 
@@ -409,8 +442,8 @@ A package can ship executable behavior:
 
 ```text
 Assembly
-   │
-   └── IMicroBundle implementation
+   |
+   +-- IMicroBundle implementation
 ```
 
 Useful when the capability contains algorithms, runtime behavior, or integration logic.
@@ -421,12 +454,13 @@ The descriptor and definition can describe semantic/configuration data:
 
 ```text
 MicroBundleDefinition
-   ├── name
-   ├── identity/version
-   └── fields
-       ├── value
-       ├── limits
-       └── nested fields
+   |
+   +-- name
+   +-- identity/version
+   +-- fields
+       +-- value
+       +-- limits
+       +-- nested fields
 ```
 
 Useful for tooling, editors, manifests, generated controls, and systems that need to inspect a capability without understanding its implementation.
@@ -434,9 +468,9 @@ Useful for tooling, editors, manifests, generated controls, and systems that nee
 ### Both together
 
 ```text
-Definition       → tells tooling what can be configured
-Implementation   → performs the capability
-Composition host → decides when and where it participates
+Definition       -> tells tooling what can be configured
+Implementation   -> performs the capability
+Composition host -> decides when and where it participates
 ```
 
 ---
@@ -453,10 +487,10 @@ For example:
 
 ```text
 Thermal
-   │
-   └── requires → Material
-                      │
-                      └── requires → Element
+   |
+   +-- requires -> Material
+                      |
+                      +-- requires -> Element
 ```
 
 The dependency graph can therefore be assembled from the capabilities themselves. The host does not need a hard-coded table of domain-specific dependencies.
@@ -481,14 +515,14 @@ MicroBundleDomain intentionally does not dictate whether those bytes represent b
 
 ```text
 MicroBundleDefinition
-       │
-       ├── String
-       ├── Integer [min/max]
-       ├── Float   [min/max]
-       ├── Boolean
-       └── Object
-             ├── child
-             └── child
+       |
+       +-- String
+       +-- Integer [min/max]
+       +-- Float   [min/max]
+       +-- Boolean
+       +-- Object
+             +-- child
+             +-- child
 ```
 
 A GUI adapter can turn those semantic categories into controls. A manifest editor can turn them into fields. A tooling package can validate them.
@@ -535,9 +569,12 @@ That is intentional.
 
 ## Documentation
 
-- **[Getting Started](docs/GETTING_STARTED.md)** — build your first MicroBundle and understand the lifecycle.
-- **[Architecture](docs/ARCHITECTURE.md)** — understand ownership, dependency direction, and host integration.
-- **[MicroBundle Domain Theory](docs/THEORY.md)** — understand the reasoning behind the model.
+- **[What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md)** — plain-language introduction.
+- **[Adventures](docs/ADVENTURES.md)** — learn by progression rather than reference.
+- **[Getting Started](docs/GETTING_STARTED.md)** — build your first capability.
+- **[Architecture](docs/ARCHITECTURE.md)** — ownership and dependency direction.
+- **[Theory](docs/THEORY.md)** — why the model exists.
+- **[Knowledge Model](docs/KNOWLEDGE_MODEL.md)** — how these explanations can form a structured knowledge surface.
 
 ---
 
