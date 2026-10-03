@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
 
     <PackageId>TheSingularityWorkshop.MicroBundleDomain</PackageId>
-    <Version>2.0.0-alpha.1</Version>
+    <Version>1.0.1</Version>
     <Authors>Trent Best</Authors>
     <Company>The Singularity Workshop</Company>
     <Description>Neutral contract for independently authored MicroBundle capabilities, including identity, dependencies, configuration, loading, and composition arbitration.</Description>
