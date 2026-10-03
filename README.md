@@ -567,6 +567,42 @@ That is intentional.
 
 ---
 
+## Performance baseline
+
+The domain contract has a companion benchmark project:
+
+**[MicroBundleDomain_Benchmarks](https://github.com/TrentBest/MicroBundleDomain_Benchmarks)**
+
+The benchmark measures **MicroBundleDescriptor construction** as dependency and provider composition grows. It deliberately does **not** benchmark FSM_COS composition.
+
+The first recorded Release run used BenchmarkDotNet 0.15.2 on .NET 8.0.31 with an Intel Core i5-10400F and RyuJIT AVX2.
+
+| Count | Scenario | Mean | Allocated |
+|---:|---|---:|---:|
+| 0 | Empty descriptor | 163.5 ns | 304 B |
+| 1 | Dependencies + providers | 281.5 ns | 800 B |
+| 4 | Dependencies + providers | 474.1 ns | 1,232 B |
+| 16 | Dependencies + providers | 903.7 ns | 2,208 B |
+| 64 | Dependencies + providers | 2,761.9 ns | 8,224 B |
+
+The complete matrix is maintained in the benchmark repository.
+
+The important architectural qualification is:
+
+~~~text
+MicroBundleDomain benchmark
+        │
+        ▼
+descriptor construction
+        │
+        X
+   not FSM_COS
+~~~
+
+These numbers tell us about the cost of the domain descriptor contract. They do not tell us the cost of dependency traversal, loading, arbitration, or RuntimeAssembly creation.
+
+For the complete result matrix, methodology, and instructions for finding the measured methods, see **[docs/BENCHMARKING.md](docs/BENCHMARKING.md)**.
+
 ## Documentation
 
 - **[What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md)** — plain-language introduction.
