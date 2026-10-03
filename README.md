@@ -16,7 +16,15 @@
 
 If you are not a developer, **you can still start here**.
 
-Imagine a workshop full of capabilities: thermal behavior, materials, rendering, language, structural analysis, sensors, business rules, or something nobody has invented yet.
+Before the workshop, start with things humans already know how to organize: **books and music**.
+
+A book series can be understood as books; a book as chapters; a chapter through characters, places, events, and descriptions. A character can have appearances, outfits, relationships, and history. None of those relationships require the larger concept to duplicate the smaller concept.
+
+Music provides another familiar example. A song can be related to its composition, performance, recording, release history, album, artist, and representations such as **8-track, vinyl, cassette, CD, or digital**. Those representations can have their own history and metadata while still referring to the same larger musical work.
+
+These examples reveal the idea before software does: **a MicroBundle is a bounded unit of meaning that can participate in larger meaning.**
+
+Now imagine a workshop full of capabilities: thermal behavior, materials, rendering, language, structural analysis, sensors, business rules, or something nobody has invented yet.
 
 A MicroBundle gives one capability a boundary that lets it say:
 
@@ -581,13 +589,13 @@ That is intentional.
 ## Version and package status
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Corrected source:** `2.0.0-alpha.1`  
+**Next release:** `1.0.1`  
 **Target:** .NET 8  
 **License:** MIT
 
 The repository previously published a `1.0.0` package before the ownership boundary was finalized. That package is immutable on NuGet.
 
-The current source corrects the ownership model by making the executable MicroBundle contract domain-owned. The corrected `2.0.0-alpha.1` source is staged for review; publication is a separate release decision.
+The current source corrects the ownership model by making the executable MicroBundle contract domain-owned. The `1.0.1` source is staged for review; publication is a separate release decision.
 
 ---
 
