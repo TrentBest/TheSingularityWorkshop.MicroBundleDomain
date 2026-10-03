@@ -64,6 +64,67 @@ Learn:
 
 ---
 
+## Adventure 0.5 — Explore a Book and a Song
+
+**For everyone. No code required.**
+
+Before building a MicroBundle, try seeing one in things humans already organize naturally.
+
+### The book path
+
+Start with a book series:
+
+~~~text
+Series
+  -> Book
+      -> Chapter
+          -> Character
+              -> Outfit / Description / History
+~~~
+
+Ask yourself at each level:
+
+> **Could this concept be identified and understood on its own?**
+
+If yes, you have found a plausible boundary of meaning.
+
+Then notice that the same concepts can participate in other relationships. A character can appear in multiple chapters. A character can have multiple outfits. A book can belong to a series and also to an edition, translation, adaptation, or publication history.
+
+### The music path
+
+Now take a familiar song and follow it through its representations:
+
+~~~text
+Song
+  -> Recording
+      -> Release
+          -> 8-track
+          -> Vinyl
+          -> Cassette
+          -> CD
+          -> Digital
+~~~
+
+Then add the surrounding knowledge:
+
+~~~text
+Song
+  -> Artist
+  -> Album
+  -> Genre
+  -> Composition
+  -> Performance
+  -> Release history
+~~~
+
+The point is not to claim that every item above must become a MicroBundle. The point is to notice how naturally humans already organize complex meaning into **independently recognizable concepts connected by relationships**.
+
+That is the mental model we want you to carry into the technical adventures.
+
+[Return to Adventure 0](WHAT_IS_A_MICROBUNDLE.md)
+
+---
+
 ## Adventure 1 — Your First Capability
 
 **For builders.**
