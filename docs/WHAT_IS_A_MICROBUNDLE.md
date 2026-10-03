@@ -42,6 +42,247 @@ So:
 
 ---
 
+## Start with something you already understand: a book
+
+Before thinking about software, think about a **book series**.
+
+Suppose a series contains several books:
+
+~~~text
+Series
+  |
+  +-- Book 1
+  +-- Book 2
+  +-- Book 3
+  +-- Book 4
+~~~
+
+The series can be understood as a bundle of the books that belong to it. But each book is meaningful on its own.
+
+Now look inside one book:
+
+~~~text
+Book
+  |
+  +-- Chapter 1
+  +-- Chapter 2
+  +-- Chapter 3
+  +-- Chapter 4
+~~~
+
+And a chapter can have meaningful things of its own:
+
+~~~text
+Chapter
+  |
+  +-- Characters
+  +-- Locations
+  +-- Events
+  +-- Objects
+  +-- Dialogue
+  +-- Descriptions
+~~~
+
+A character can be described through the story as well:
+
+~~~text
+Character
+  |
+  +-- identity
+  +-- descriptions
+  +-- relationships
+  +-- appearances
+  +-- outfits
+  +-- actions
+  +-- history
+~~~
+
+The important observation is **not** that a book is physically made from MicroBundles. This is a way to understand the compositional idea.
+
+A MicroBundle is useful because a meaningful concept can stand on its own **and also participate in a larger meaningful concept**.
+
+The series does not need to duplicate every detail of every book. It can reference the books. A book can reference its chapters. A chapter can reference the characters, events, places, and other concepts that give it meaning.
+
+That is composition by reference rather than composition by duplication.
+
+### The boundary can appear at many levels
+
+There is no rule saying that a MicroBundle must represent a particular kind of thing.
+
+For example:
+
+~~~text
+Series
+  -> Book
+      -> Chapter
+          -> Character
+              -> Outfit
+          -> Location
+          -> Event
+~~~
+
+Each node can be independently meaningful.
+
+The useful question is not:
+
+> "How small is it?"
+
+The useful question is:
+
+> **"What coherent meaning does this boundary represent?"**
+
+That is why **Micro** is about scope, not physical size.
+
+---
+
+## Music makes the idea even more interesting
+
+Now consider a song you already know.
+
+Take a Journey song such as **"Don't Stop Believin'"**.
+
+A listener thinks of it as one song. But that song can have many legitimate aspects and representations:
+
+~~~text
+Song
+  |
+  +-- composition
+  +-- performance
+  +-- recording
+  +-- lyrics
+  +-- musicians
+  +-- instruments
+  +-- artwork
+  +-- release history
+  +-- recording formats
+       +-- 8-track
+       +-- vinyl
+       +-- cassette
+       +-- CD
+       +-- digital
+~~~
+
+The physical or digital representation can become another meaningful boundary.
+
+An 8-track is not merely "the same bytes in a smaller box." It has its own historical context, physical characteristics, release information, and relationship to the recording.
+
+A vinyl release has different information and constraints. A cassette release has another. A CD release has another. A digital release can carry yet another set of metadata.
+
+And the song itself has history:
+
+~~~text
+Song
+  |
+  +-- written
+  +-- recorded
+  +-- mixed
+  +-- released
+  +-- re-released
+  +-- remastered
+  +-- represented in different formats
+~~~
+
+Those are all useful pieces of knowledge about the same larger concept.
+
+A MicroBundle model should therefore be comfortable with **composition, representation, provenance, and history**. The fact that a concept participates in another bundle does not make the smaller concept meaningless. Quite the opposite: its independent meaning is what makes composition possible.
+
+### The same song can participate in many bundles
+
+A song might belong to:
+
+~~~text
+Song
+  |
+  +-- Album
+  +-- Artist
+  +-- Genre
+  +-- Year / Era
+  +-- Release
+  +-- Format
+  +-- Collection
+  +-- Personal Playlist
+~~~
+
+The song is not necessarily "owned" by one of those contexts. It can be referenced by many contexts.
+
+This is an important part of the MicroBundle idea: **composition does not have to mean containment**.
+
+A bundle can express a meaningful relationship to other MicroBundles without physically swallowing their definitions.
+
+---
+
+## Books and music show why "bundle" does not mean "container"
+
+The word *bundle* can make people imagine a box full of objects.
+
+That is too restrictive for this model.
+
+A better mental picture is a **network of meaningful references**:
+
+~~~text
+                  Series
+                 /      \\
+             Book       Book
+              |
+           Chapter
+          /   |   \\
+     Character Event Location
+          |
+        Outfit
+~~~
+
+And elsewhere:
+
+~~~text
+                Artist
+               /      \\
+            Album     Song
+                        |
+             +----------+----------+
+             |          |          |
+           Vinyl      Cassette     CD
+             |          |          |
+          release     release    release
+~~~
+
+The same concept may participate in several larger structures.
+
+That is why a MicroBundle is better thought of as a **bounded unit of meaning** than as a physical container.
+
+---
+
+## Composition can carry history too
+
+Once you stop thinking of a bundle as merely a box of implementation, another important possibility appears: **history can itself be composable information**.
+
+A MicroBundle describing a book might relate the book to:
+
+- its edition
+- its publication history
+- its chapters
+- its characters
+- its settings
+- its illustrations
+- its translations
+- its adaptations
+
+A MicroBundle describing music might relate a song to:
+
+- its composition
+- its performers
+- its recording sessions
+- its releases
+- its formats
+- its remasters
+- its artwork
+- its catalog history
+
+The contract does not need to dictate which of these domains are correct. The domain author defines the meaningful relationships.
+
+**The MicroBundle contract provides the seam; the domain provides the meaning.**
+
+---
+
 ## Think about a toolbox
 
 Imagine opening a toolbox.
