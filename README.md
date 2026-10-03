@@ -665,3 +665,24 @@ The current source corrects the ownership model by making the executable MicroBu
   <em>The Singularity Workshop — Tools for the curious, the bold, and the systemically inclined.</em><br>
   <strong>Because state shouldn't be a mess.</strong>
 </p>
+
+
+---
+
+## Ontology: optional semantic structure
+
+MicroBundleDomain deliberately does **not** define an ontology. It defines the neutral capability boundary.
+
+If a developer wants semantic addressing, layered meaning, or N-dimensional semantic coordinates, the independent [TheSingularityWorkshop.Ontology](https://github.com/TrentBest/TheSingularityWorkshop.Ontology) package can be used as a MicroBundle/domain layer above this contract.
+
+```text
+MicroBundleDomain
+      |
+      +----> Ontology (optional)
+      |
+      +----> domain MicroBundles
+```
+
+This is an important distinction: a five-layer application, a nine-layer application, a flat application, or an application with no ontology at all can use the same MicroBundle contract.
+
+Ontology owns semantic structure. MicroBundleDomain owns the composable capability boundary.
