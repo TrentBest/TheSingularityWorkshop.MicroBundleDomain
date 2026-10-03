@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
 
     <PackageId>TheSingularityWorkshop.MicroBundleDomain</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Trent Best</Authors>
     <Company>The Singularity Workshop</Company>
-    <Description>Domain-side foundation for defining and composing loadable MicroBundle semantic capabilities.</Description>
-    <PackageTags>MicroBundle;FSM;FSM_COS;Experience;semantic-capability;digital-reality</PackageTags>
+    <Description>Neutral contract for independently authored MicroBundle capabilities, including identity, dependencies, configuration, loading, and composition arbitration.</Description>
+    <PackageTags>MicroBundle;capability;composition;modular;plugin;runtime;configuration;repository</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain</RepositoryUrl>
