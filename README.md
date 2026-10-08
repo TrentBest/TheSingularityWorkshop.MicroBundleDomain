@@ -44,7 +44,7 @@ using TheSingularityWorkshop.MicroBundleDomain;
 
 var bundle = new GreetingMicroBundle();
 
-Console.WriteLine($"MicroBundle {bundle.Id} v{bundle.Descriptor.Version}");
+Console.WriteLine($"MicroBundle {bundle.Descriptor.Id} v{bundle.Descriptor.Version}");
 Console.WriteLine($"Provider: {bundle.Descriptor.Providers[0].Id}");
 
 public sealed class GreetingMicroBundle : IMicroBundle
