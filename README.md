@@ -12,6 +12,87 @@
 
 ![Opaque MicroBundle Capability Core](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/master/docs/images/microbundle-domain-01.png)
 
+
+## What and Why
+
+**MicroBundleDomain defines what a capability is—not where it is stored or how a runtime is composed.** It gives independently authored capabilities a shared contract for identity, dependencies, loading, configuration access, and arbitration, without forcing them to depend on a particular host.
+
+That boundary lets your application or ecosystem work with a capability without understanding all of its private implementation. You can adopt this contract without adopting FSM_COS or the rest of the Workshop.
+
+## 60-Second Quick Start
+
+This example creates a small capability in a Visual Studio Console App. It demonstrates the domain contract; it does not pretend that a composition host or repository is included in this package.
+
+### 1. Create a project in Visual Studio
+
+Choose **Create a new project → Console App**, select C#, and target **.NET 8**.
+
+### 2. Open the Developer Terminal
+
+Choose **View → Terminal**. Make sure the terminal is in the directory containing the new project's `.csproj` file.
+
+### 3. Install MicroBundleDomain
+
+```powershell
+dotnet add package TheSingularityWorkshop.MicroBundleDomain --version 1.0.1
+```
+
+### 4. Replace `Program.cs` with this example
+
+```csharp
+using TheSingularityWorkshop.MicroBundleDomain;
+
+var bundle = new GreetingMicroBundle();
+
+Console.WriteLine($"MicroBundle {bundle.Id} v{bundle.Descriptor.Version}");
+Console.WriteLine($"Provider: {bundle.Descriptor.Providers[0].Id}");
+
+public sealed class GreetingMicroBundle : IMicroBundle
+{
+    public MicroBundleDescriptor Descriptor { get; } =
+        new(
+            id: 1001,
+            version: "1.0.0",
+            providers: [new MicroBundleProvider("greeting")]);
+
+    public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
+        Array.Empty<MicroBundleDependencyRequest>();
+
+    public void Load(IMicroBundleLoadContext context)
+    {
+        // Initialize capability-owned state when a composition host loads it.
+    }
+
+    public bool Arbitrate(IMicroBundleArbitrationContext context, int roundIndex)
+    {
+        // Return true only when this capability changes the composition
+        // and another arbitration round is needed.
+        return false;
+    }
+}
+```
+
+Expected output:
+
+```text
+MicroBundle 1001 v1.0.0
+Provider: greeting
+```
+
+You have defined a capability with identity, a version, a provider, and the lifecycle hooks a composition host can call. The no-op methods are intentional: this first example demonstrates the contract before adding behavior.
+
+## Add It to an Existing Project
+
+Already have an application or reusable library? You do not need to restructure it around the Workshop.
+
+1. Add `TheSingularityWorkshop.MicroBundleDomain` 1.0.1 to the project that defines your capability.
+2. Implement `IMicroBundle` on the capability or use a small adapter around an existing domain object.
+3. Keep business meaning and capability-owned behavior in your domain implementation.
+4. Let a composition host decide when to call `Load` and `Arbitrate`.
+
+MicroBundleDomain does **not** require FSM_COS, MicroBundleRepository, REST, storage, a GUI, or a particular host. Add those only when your application needs their separate responsibilities.
+
+
 ## Before the code: what is the idea?
 
 If you are not a developer, **you can still start here**.
@@ -625,13 +706,12 @@ For the complete result matrix, methodology, and instructions for finding the me
 ## Version and package status
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Next release:** `1.0.1`  
+**Published package:** `TheSingularityWorkshop.MicroBundleDomain` 1.0.1  
 **Target:** .NET 8  
+**Dependencies:** none  
 **License:** MIT
 
-The repository previously published a `1.0.0` package before the ownership boundary was finalized. That package is immutable on NuGet.
-
-The current source corrects the ownership model by making the executable MicroBundle contract domain-owned. The `1.0.1` source is staged for review; publication is a separate release decision.
+Version 1.0.1 carries the domain-owned executable MicroBundle contract. The earlier 1.0.0 package remains immutable; consumers should use 1.0.1 for the corrected ownership boundary.
 
 ---
 
