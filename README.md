@@ -266,7 +266,7 @@ This package does **not** try to become your storage system, REST client, render
 
 ---
 
-## The 30-second example
+## 🔺 03 — See It Work in 60 Seconds
 
 Suppose you are building a **ThermalCapability**.
 
