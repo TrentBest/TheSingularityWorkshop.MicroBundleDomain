@@ -164,7 +164,7 @@ The host owns the arbitration loop. The MicroBundle owns its response to the com
 
 ## 6. Add an editor definition when your capability is configurable
 
-If your capability has data that tooling should be able to inspect, define a `MicroBundleDefinition`:
+If your capability has data that tooling should be able to inspect, define a `MicroBundleDefinition`. Give each configurable field an explicit stable ID using `MicroBundleFieldBuilder`:
 
 ~~~csharp
 var definition = new MicroBundleDefinition(
@@ -172,19 +172,25 @@ var definition = new MicroBundleDefinition(
     descriptor: bundle.Descriptor,
     fields:
     [
-        new MicroBundleField(
-            name: "message",
-            kind: MicroBundleFieldKind.String,
-            defaultValue: "Hello"),
+        new MicroBundleFieldBuilder("message", MicroBundleFieldKind.String)
+            .WithId("com.example.greeting.message")
+            .WithDefaultValue("Hello")
+            .Build(),
 
-        new MicroBundleField(
-            name: "repeat",
-            kind: MicroBundleFieldKind.Integer,
-            defaultValue: 1,
-            minimum: 1,
-            maximum: 10)
+        new MicroBundleFieldBuilder("repeat", MicroBundleFieldKind.Integer)
+            .WithId("com.example.greeting.repeat")
+            .WithDefaultValue(1)
+            .WithRange(1, 10)
+            .Build()
     ]);
+
+if (!definition.HasStableParameterIds)
+{
+    throw new InvalidOperationException("Every configurable field needs a stable parameter ID.");
+}
 ~~~
+
+The parameter IDs belong to the capability's schema. Keep them unchanged when renaming or moving fields; do not derive them from labels or nested paths. See [Stable Parameter Identity](STABLE_PARAMETER_IDS.md) for the contract and evolution rules.
 
 A tooling or GUI package can inspect this schema without knowing what a Greeting actually does.
 
