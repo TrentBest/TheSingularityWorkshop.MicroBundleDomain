@@ -14,14 +14,6 @@ Use the fluent field builder to assign a stable ID:
 ~~~csharp
 using TheSingularityWorkshop.MicroBundleDomain;
 
-var density = new MicroBundleFieldBuilder(
-        "Density",
-        MicroBundleFieldKind.Float)
-    .WithId("com.example.matter.density")
-    .WithDefaultValue(1.0)
-    .WithRange(0, 1000)
-    .Build();
-
 var physical = new MicroBundleFieldBuilder(
         "Physical",
         MicroBundleFieldKind.Object)
