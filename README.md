@@ -20,7 +20,7 @@ A MicroBundle can identify itself, declare requirements, accept configuration, e
 
 ## 🟣 02 Why
 
-The package makes this boundary explicit so applications can compose the capability without coupling unrelated responsibilities. It should remain a small, honest contract: no hidden provider, host, or runtime behavior is implied unless the implementation and tests demonstrate it.
+Independent capability authors need a small contract they can implement without depending on one host or storage provider. That neutrality is what lets the repository and composition layers evolve without taking ownership of every bundle's private domain.
 
 ## 🔺 03 How
 
