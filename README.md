@@ -1,4 +1,42 @@
+![The Singularity Workshop animated moniker](https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.Renderer/development/docs/assets/moniker.svg)
+
 # TheSingularityWorkshop.MicroBundleDomain
+
+
+> **The neutral contract for independently authored capabilities.**
+
+A MicroBundle can identify itself, declare requirements, accept configuration, enter a runtime, and participate in composition without forcing a host to understand its private domain.
+
+```mermaid
+flowchart TD
+  W[What: MicroBundleDomain] --> R[Where: MicroBundleRepository]
+  R --> H[How: composition host]
+  H --> E[Experience / application]
+```
+
+## 🟦 01 What
+
+A MicroBundle can identify itself, declare requirements, accept configuration, enter a runtime, and participate in composition without forcing a host to understand its private domain.
+
+## 🟣 02 Why
+
+The package makes this boundary explicit so applications can compose the capability without coupling unrelated responsibilities. It should remain a small, honest contract: no hidden provider, host, or runtime behavior is implied unless the implementation and tests demonstrate it.
+
+## 🔺 03 How
+
+MicroBundleDomain defines what a capability is. MicroBundleRepository defines where its artifact comes from. A composition host such as FSM_COS determines how capabilities are assembled.
+
+## 🟢 04 See it in a minute
+
+Start with the plain-language introduction and the 60-second example; then inspect the contract tests and implementation notes before relying on any lifecycle behavior.
+
+## 🟪 05 Documentation and theory
+
+[Start here](#start-here) · [See it work in 60 seconds](#-03--see-it-work-in-60-seconds) · [Documentation](docs/)
+
+---
+
+## Detailed guide
 
 **A neutral contract for independently authored capabilities.**
 
