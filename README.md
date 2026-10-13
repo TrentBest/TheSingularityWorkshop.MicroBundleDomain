@@ -16,7 +16,7 @@ flowchart TD
 
 ## 🟦 01 What
 
-A MicroBundle can identify itself, declare requirements, accept configuration, enter a runtime, and participate in composition without forcing a host to understand its private domain.
+It defines the neutral contracts a capability uses to identify itself and participate in a runtime. Artifact delivery and runtime composition belong to separate layers.
 
 ## 🟣 02 Why
 
