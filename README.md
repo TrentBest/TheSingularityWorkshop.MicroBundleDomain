@@ -7,6 +7,8 @@
 
 # ✳️ 00 TheSingularityWorkshop.MicroBundleDomain
 
+This README follows the Workshop's shared [Documentation Standard](https://github.com/TrentBest/TheSingularityWorkshop.FSM_COS/blob/master/DOCUMENTATION_STANDARD.md).
+
 **A neutral contract for independently authored capabilities.**
 
 > **A MicroBundle is a focused capability that can identify itself, declare what it needs, accept configuration, enter a runtime, and participate in composition without requiring the host to understand its private domain.**
