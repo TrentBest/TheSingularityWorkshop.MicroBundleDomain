@@ -19,5 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\TheSingularityWorkshop.MicroBundleDomain.csproj" />
+    <ProjectReference Include="..\..\examples\SingularityArenaFixture\SingularityArenaFixture.csproj" />
   </ItemGroup>
 </Project>
