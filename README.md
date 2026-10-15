@@ -66,6 +66,13 @@ You do not need to read everything in order.
 
 The documentation is deliberately a **body of knowledge with multiple entry points**, not one giant technical page.
 
+## Soccer domain example
+
+- [Soccer Domain MicroBundle](docs/SOCCER_DOMAIN_MICROBUNDLE.md) — field, teams, tactical vocabulary, and match authority boundaries.
+- [Soccer Match Experience](docs/SOCCER_MATCH_EXPERIENCE.md) — the staged plan for turning match decisions into a convincing live arena experience.
+
+These are design documents on a review branch, not a published soccer capability or a claim that a playable match already exists.
+
 ## Start here
 
 If you know almost nothing about MicroBundles, **do not start with the API**.
