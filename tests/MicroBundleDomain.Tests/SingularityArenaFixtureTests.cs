@@ -23,6 +23,25 @@ public sealed class SingularityArenaFixtureTests
     }
 
     [Fact]
+    public void MarketAndCraftFairsUseDistinctProvidersWithoutAnEconomyDependency()
+    {
+        var schedule = new ArenaSchedule();
+        var start = new DateTimeOffset(2030, 6, 16, 10, 0, 0, TimeSpan.Zero);
+        var market = schedule.Schedule("market-1", "city-square", ArenaEventKind.MarketFair,
+            start, start.AddHours(4), "market.fair");
+        var craft = schedule.Schedule("craft-1", "city-square", ArenaEventKind.CraftFair,
+            start.AddHours(4), start.AddHours(8), "craft.fair");
+        var bundle = new SingularityArenaMicroBundle();
+
+        Assert.Equal(2, schedule.Events.Count);
+        Assert.Equal("market.fair", market.ProviderId);
+        Assert.Equal("craft.fair", craft.ProviderId);
+        Assert.Empty(bundle.Dependencies);
+        Assert.DoesNotContain(bundle.Descriptor.Providers, provider =>
+            provider.Id.Contains("economy", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
     public void VenueRejectsOverlappingEventsAndDuplicateIds()
     {
         var schedule = new ArenaSchedule();
