@@ -1,6 +1,6 @@
 # Soccer Match Experience — From Domain Decisions to a Living Arena
 
-**Status: experience architecture and implementation plan. This document does not claim that a soccer simulation, crowd system, stadium renderer, audio engine, or live arena already exists.**
+**Status: architecture plan plus a first deterministic, scripted domain fixture. This document does not claim that a soccer simulation, crowd system, stadium renderer, audio engine, or live arena already exists.**
 
 The goal is to stage a convincing soccer match inside Singularity City. The first milestone is not a complete sports simulator. It is a small, coherent match in which decisions have visible consequences and the presentation consistently reflects the authoritative match state.
 
@@ -94,8 +94,8 @@ Use the current Gestures evaluator only for what it actually provides: determini
 
 ## Build and validation sequence
 
-### Stage 1 — Domain fixture
-Create deterministic field geometry, team and player state, ball state, match phases, role objectives, action requests, and explicit outcomes. Include one short attack in which the carrier passes to a support player, followed by a shot and a confirmed outcome. Include a failure path such as an intercepted pass or saved shot.
+### Stage 1 — Domain fixture (first slice created)
+The [first executable fixture](SOCCER_MATCH_FIXTURE.md) now establishes the MicroBundle seam, distinct player roles/objectives, a scripted pass and shot, an explicit goal-award event, and a score that changes only after that event. It is deliberately deterministic and scripted; it is not a physics simulation. The next work is to replace scripted outcomes with explicit decision/result records and add failure paths such as an intercepted pass or saved shot.
 
 ### Stage 2 — Tactical readability
 Test that support players create useful options, defenders respond to the ball and threats, players retain independent assignments, and decisions change when lanes close. Add high-line/offside scenarios only with correct timing inputs and authoritative adjudication.
