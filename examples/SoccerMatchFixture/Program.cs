@@ -16,7 +16,7 @@ internal static class Program
         Console.WriteLine("SOCCER DOMAIN — DETERMINISTIC FIRST ATTACK");
         Console.WriteLine($"MicroBundle: {soccer.Descriptor.Id} v{soccer.Descriptor.Version}");
         Console.WriteLine($"Runtime: {context.RuntimeId}");
-        Console.WriteLine($"Teams ready: {match.HomePlayers.Count} home / {match.AwayPlayers.Count} away");
+        Console.WriteLine($"Fixture roster: {match.HomePlayers.Count} home / {match.AwayPlayers.Count} away (representative roles, not a full match roster)");
         Console.WriteLine($"Final score: {match.HomeScore}-{match.AwayScore}");
         Console.WriteLine();
         foreach (var item in events)
@@ -115,7 +115,7 @@ internal sealed class DeterministicMatchFixture
 
     public IReadOnlyList<MatchEvent> PlayFirstAttack()
     {
-        Add("MatchReady", "Both teams have enough players to start this fixture.");
+        Add("MatchReady", "The small fixture scenario has representative players on both sides; production team eligibility is not implemented here.");
         Add("Kickoff", "Home starts in possession; attack direction is toward the away goal.");
         Add("PlayerAssigned", "A carries; B supports ahead of the ball; C stretches the right side.");
         Add("DefensiveShape", "D delays A while E protects the central lane; defenders track the ball and runners.");
