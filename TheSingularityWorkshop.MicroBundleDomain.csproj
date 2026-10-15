@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Compile Remove="tests\**" />
+    <Compile Remove="examples\**" />
     <None Include="README.md" Pack="true" PackagePath="" />
     <None Include="LICENSE.txt" Pack="true" PackagePath="" />
     <None Include="docs\images\*.png" Pack="true" PackagePath="docs\images\" />

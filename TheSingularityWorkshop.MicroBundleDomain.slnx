@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="tests/MicroBundleDomain.Tests/MicroBundleDomain.Tests.csproj" />
   <Project Path="TheSingularityWorkshop.MicroBundleDomain.csproj" />
+  <Project Path="examples/SingularityArenaFixture/SingularityArenaFixture.csproj" />
 </Solution>

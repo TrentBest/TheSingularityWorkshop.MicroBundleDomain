@@ -66,6 +66,15 @@ You do not need to read everything in order.
 
 The documentation is deliberately a **body of knowledge with multiple entry points**, not one giant technical page.
 
+## Soccer domain example
+
+- [Soccer Domain MicroBundle](docs/SOCCER_DOMAIN_MICROBUNDLE.md) — field, teams, tactical vocabulary, and match authority boundaries.
+- [Soccer Match Experience](docs/SOCCER_MATCH_EXPERIENCE.md) — the staged plan for turning match decisions into a convincing live arena experience.
+- [First executable match fixture](docs/SOCCER_MATCH_FIXTURE.md) — the deterministic first attack, scope boundaries, and next implementation seam.
+- [Run the fixture](examples/SoccerMatchFixture/README.md) — build and run the console example.
+
+The fixture is an executable domain example with a scripted outcome, not a published soccer capability or a complete playable match.
+
 ## Start here
 
 If you know almost nothing about MicroBundles, **do not start with the API**.
@@ -628,6 +637,9 @@ For the complete result matrix, methodology, and instructions for finding the me
 - **[Architecture](docs/ARCHITECTURE.md)** — ownership and dependency direction.
 - **[Theory](docs/THEORY.md)** — why the model exists.
 - **[Knowledge Model](docs/KNOWLEDGE_MODEL.md)** — how these explanations can form a structured knowledge surface.
+- **[Soccer Domain MicroBundle](docs/SOCCER_DOMAIN_MICROBUNDLE.md)** — field availability, match readiness, tactical zones, environment-defined actions, skill-dependent opportunities, and the boundary between pose evaluation and authoritative match outcomes.
+- **[Singularity Arena Performance Fixture](docs/SINGULARITY_ARENA_PERFORMANCE.md)** — shared venue scheduling for soccer, concerts, market fairs, and craft fairs, event lifecycle, deterministic concert cues, and individual audience intentions; explicitly not a live audio, crowd, or physics simulation.
+- **[Experiences Beyond the Arena](docs/EXPERIENCES_AND_OPTIONAL_ECONOMY.md)** — market and craft fairs, other Experience types, and the rule that Economy is an optional adapter rather than a prerequisite.
 
 ---
 
