@@ -30,19 +30,23 @@ internal static class Program
         {
             Console.WriteLine(
                 $"[{reaction.EventSequence:00}] +{reaction.PresentationDelayMilliseconds}ms " +
-                $"{reaction.Name} ({reaction.DigitenId}, {reaction.Section} {reaction.TriggerEvent}) " +
+                $"{reaction.Name} ({reaction.DigitenId}, {reaction.Section} {reaction.Seat}, {reaction.TriggerEvent}) " +
                 $"=> {reaction.Gesture}");
         }
 
         var goalReactions = reactions.Where(x => x.Gesture == "StandAndCelebrate").ToArray();
-        if (goalReactions.Length != 5 || goalReactions.Any(x => x.TriggerEvent != "GoalAwarded"))
+        if (goalReactions.Length != 5 ||
+            goalReactions.Any(x => x.TriggerEvent != "GoalAwarded") ||
+            goalReactions.Select(x => x.DigitenId).Distinct(StringComparer.Ordinal).Count() != 5 ||
+            goalReactions.Select(x => x.Seat).Distinct(StringComparer.Ordinal).Count() != 5)
         {
             Console.Error.WriteLine("Fixture failed: spectator celebrations must follow the authoritative GoalAwarded event.");
             return 1;
         }
 
         if (goalReactions.Select(x => x.PresentationDelayMilliseconds).Distinct().Count() < 2 ||
-            spectators.IndividualStates.Count != 5)
+            spectators.IndividualStates.Count != 5 ||
+            reactions.Any(x => x.Gesture == "StandAndCelebrate" && x.TriggerEvent != "GoalAwarded"))
         {
             Console.Error.WriteLine("Fixture failed: spectator identities and staggered reactions must remain independent.");
             return 1;
