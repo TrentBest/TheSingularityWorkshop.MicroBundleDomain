@@ -1,6 +1,6 @@
 # Singularity Arena — Shared Venue and Concert Event Fixture
 
-**Status: executable reference fixture.** This example adds a small shared venue schedule and deterministic concert cue-to-audience-intention projection alongside the existing soccer match fixture. It does not implement a live stadium, persistent scheduling, ticketing, audio generation, physics, crowd locomotion, Gesture evaluation, or Renderer integration.
+**Status: executable reference fixture.** This example demonstrates shared venue scheduling for soccer, concerts, market fairs, and craft fairs, plus a deterministic concert cue-to-audience-intention projection. It does not implement a live stadium, persistent scheduling, ticketing, audio generation, physics, crowd locomotion, Gesture evaluation, or Renderer integration.
 
 ## Why a shared Arena contract
 
