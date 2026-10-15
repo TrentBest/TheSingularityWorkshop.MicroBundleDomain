@@ -38,11 +38,10 @@ You do not need to understand the entire framework before writing your first cap
 
 ## 1. Add the package
 
-The corrected package is staged as:
+Install the published package from NuGet:
 
-~~~xml
-<PackageReference Include="TheSingularityWorkshop.MicroBundleDomain"
-                  Version="2.0.0-alpha.1" />
+~~~powershell
+dotnet add package TheSingularityWorkshop.MicroBundleDomain --version 1.0.1
 ~~~
 
 The package targets .NET 8 and has no dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
