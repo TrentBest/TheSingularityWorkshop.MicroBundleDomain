@@ -4,6 +4,8 @@
 
 The goal is to stage a convincing soccer match inside Singularity City. The first milestone is not a complete sports simulator. It is a small, coherent match in which decisions have visible consequences and the presentation consistently reflects the authoritative match state.
 
+The shared venue now also has a separate [Singularity Arena performance fixture](SINGULARITY_ARENA_PERFORMANCE.md): the same venue schedule can hold soccer and concert events in separate time windows. Concert cues and audience intentions remain separate from match events and do not alter the soccer authority.
+
 ## The feeling we are trying to create
 
 A spectator should be able to glance at the pitch and understand:
