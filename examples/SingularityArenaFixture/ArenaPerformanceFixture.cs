@@ -295,6 +295,8 @@ public sealed class ConcertAudienceReactionDirector
                 => AudienceGestureIntent.DanceInPlace,
             ConcertCueKind.InstrumentalBreakStarted when profile.Expressiveness >= 30
                 => AudienceGestureIntent.Sway,
+            ConcertCueKind.EncoreRequested when profile.Expressiveness >= 40 => AudienceGestureIntent.Clap,
+            ConcertCueKind.EncoreRequested => AudienceGestureIntent.WatchQuietly,
             ConcertCueKind.ShowCompleted when profile.Expressiveness >= 50 => AudienceGestureIntent.Clap,
             ConcertCueKind.ShowCompleted => AudienceGestureIntent.WatchQuietly,
             _ => AudienceGestureIntent.ListenQuietly
