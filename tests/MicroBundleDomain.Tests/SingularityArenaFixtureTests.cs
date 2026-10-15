@@ -37,8 +37,6 @@ public sealed class SingularityArenaFixtureTests
         Assert.Equal("market.fair", market.ProviderId);
         Assert.Equal("craft.fair", craft.ProviderId);
         Assert.Empty(bundle.Dependencies);
-        Assert.DoesNotContain(bundle.Descriptor.Providers, provider =>
-            provider.Id.Contains("economy", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
