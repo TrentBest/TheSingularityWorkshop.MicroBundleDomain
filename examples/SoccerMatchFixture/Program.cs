@@ -22,6 +22,32 @@ internal static class Program
         foreach (var item in events)
             Console.WriteLine($"[{item.Sequence:00}] {item.Name}: {item.Detail}");
 
+        Console.WriteLine();
+        Console.WriteLine("SPECTATOR REACTIONS — DETERMINISTIC PRESENTATION PROJECTION");
+        var spectators = new SpectatorReactionDirector();
+        var reactions = events.SelectMany(spectators.Observe).ToArray();
+        foreach (var reaction in reactions)
+        {
+            Console.WriteLine(
+                $"[{reaction.EventSequence:00}] +{reaction.PresentationDelayMilliseconds}ms " +
+                $"{reaction.Name} ({reaction.DigitenId}, {reaction.Section} {reaction.TriggerEvent}) " +
+                $"=> {reaction.Gesture}");
+        }
+
+        var goalReactions = reactions.Where(x => x.Gesture == "StandAndCelebrate").ToArray();
+        if (goalReactions.Length != 5 || goalReactions.Any(x => x.TriggerEvent != "GoalAwarded"))
+        {
+            Console.Error.WriteLine("Fixture failed: spectator celebrations must follow the authoritative GoalAwarded event.");
+            return 1;
+        }
+
+        if (goalReactions.Select(x => x.PresentationDelayMilliseconds).Distinct().Count() < 2 ||
+            spectators.IndividualStates.Count != 5)
+        {
+            Console.Error.WriteLine("Fixture failed: spectator identities and staggered reactions must remain independent.");
+            return 1;
+        }
+
         if (match.HomeScore != 1 || match.AwayScore != 0)
         {
             Console.Error.WriteLine("Fixture failed: the authoritative goal outcome was not reflected in the score.");
