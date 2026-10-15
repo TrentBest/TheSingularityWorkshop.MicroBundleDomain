@@ -628,6 +628,7 @@ For the complete result matrix, methodology, and instructions for finding the me
 - **[Architecture](docs/ARCHITECTURE.md)** — ownership and dependency direction.
 - **[Theory](docs/THEORY.md)** — why the model exists.
 - **[Knowledge Model](docs/KNOWLEDGE_MODEL.md)** — how these explanations can form a structured knowledge surface.
+- **[Soccer Domain MicroBundle](docs/SOCCER_DOMAIN_MICROBUNDLE.md)** — field availability, match readiness, tactical zones, environment-defined actions, skill-dependent opportunities, and the boundary between pose evaluation and authoritative match outcomes.
 
 ---
 
