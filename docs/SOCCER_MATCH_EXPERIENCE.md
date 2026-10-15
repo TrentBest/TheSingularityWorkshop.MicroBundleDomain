@@ -16,6 +16,8 @@ A spectator should be able to glance at the pitch and understand:
 
 The spectacle should emerge from the match rather than from unrelated animation. A celebration follows an awarded goal; a goalkeeper reaction follows a shot outcome; the crowd's strongest reaction follows a meaningful event. Presentation must never invent a goal, possession change, foul, or offside decision.
 
+Digitens who arrive to watch are participants in the arena's gesture environment, not merely a static audience layer. The arena offers appropriate spectator gestures—walking to a section, navigating aisles, finding a seat, sitting in the bleachers, watching the pitch, standing or shifting position when suitable, reacting to a chance, cheering, celebrating a goal, and settling back into watching. Each Digiten's current situation governs which gesture is chosen. People should not all perform the same gesture at the same instant: reactions can ripple across individuals and stands, with stronger collective cheering after a confirmed goal. The gesture system supplies movement/pose behavior; it does not decide match outcomes. These are requirements for future integration, not a claim that spectator locomotion or crowd simulation is implemented.
+
 ## System boundaries
 
 | Layer | Responsibility | Must not pretend to own |
@@ -89,6 +91,10 @@ Prioritize readable silhouettes and clear state before fine detail:
 - A camera that preserves tactical context but can follow a shot, save, or goal without losing the ball.
 - Scoreboard, clock, and referee/crowd cues driven by match state.
 - Crowd activity with restrained ambient variation, plus stronger reactions to meaningful events.
+- Digitens with independent spectator state: arriving, finding a seat, seated/watching, temporarily moving, reacting, cheering, celebrating, and returning to watching.
+- Arena-provided gesture choices constrained by venue layout (aisles, stairs, stand sections, seating) and each Digiten's current context.
+- Staggered individual and section-level reactions: attention rises during a dangerous attack, saves/misses feel different, and a confirmed goal produces the strongest cheer and celebration.
+- Spectator gestures remain presentation/behavior, never an authority for score, possession, or match rules.
 
 Use the current Gestures evaluator only for what it actually provides: deterministic pose evaluation. A host-specific rig mapping, locomotion controller, ball physics, and sound/presentation layer are separate work items until implemented and validated.
 
@@ -106,8 +112,8 @@ Translate approved movement/action requests to Gestures procedures. Validate ide
 ### Stage 4 — Ball and match authority
 Implement or connect the authoritative ball/match simulation. Test pass outcomes, loose balls, possession changes, shots, saves, goals, out-of-play restarts, and rule decisions independently of visual success.
 
-### Stage 5 — Arena presentation
-Add the pitch and goal visuals, stable player representations, camera, scoreboard/clock, crowd ambience, event-linked sound and reactions. Make the same match event stream drive every presentation element so they cannot contradict one another.
+### Stage 5 — Arena presentation and spectator participation
+Add the pitch and goal visuals, stable player representations, camera, scoreboard/clock, crowd ambience, event-linked sound and reactions. Digitens arriving to watch should participate in arena-provided gestures: enter and navigate the venue, sit in the bleachers, attend to play, cheer at meaningful moments, celebrate confirmed goals, and settle back down. Keep each Digiten's movement and state independent, respecting stand/aisle/seating constraints; use staggered and section-level responses rather than synchronized copies. Make the same match event stream drive all match-related reactions so presentation elements cannot contradict one another. Spectator movement and gestures do not replace authoritative match state.
 
 ### Stage 6 — Demonstration and scale
 Record deterministic scenarios and validate the experience at normal spectator distance. Then add more tactical choices, player variation, camera styles, replays, and larger rosters based on measured readability and performance.
@@ -123,6 +129,8 @@ Record deterministic scenarios and validate the experience at normal spectator d
 - A completed gesture cannot by itself award a pass, possession, foul, offside, or goal.
 - The score changes only after a confirmed goal event.
 - Camera, sound, crowd, and player reactions are consequences of match events, not competing sources of truth.
+- Digitens can arrive, find seating, sit, watch, move appropriately through the venue, react to chances, cheer on a confirmed goal, and return to watching using arena-provided gestures.
+- Spectator responses vary by individual/context and are not all synchronized; the strongest celebration follows GoalAwarded.
 - A deterministic replay of the same inputs produces the same domain decisions and outcomes, where the chosen simulation model promises determinism.
 - Tests and documentation distinguish implemented behavior from illustrative fixtures and unimplemented presentation.
 
