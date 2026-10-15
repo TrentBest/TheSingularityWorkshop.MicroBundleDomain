@@ -4,7 +4,7 @@
 
 ## Why a shared Arena contract
 
-Singularity Arena is the venue; soccer and concerts are event types. The venue schedule should not become a soccer-only object, and the concert provider should not need to redefine venue identity or scheduling rules.
+Singularity Arena is the venue; soccer, concerts, karaoke, market fairs, and craft fairs are event types. The venue schedule should not become a soccer-only object, and any event provider should not need to redefine venue identity or scheduling rules.
 
 The example introduces:
 - a shared in-memory **ArenaSchedule**;
@@ -16,7 +16,9 @@ The example introduces:
 - stable per-Digiten reaction delay metadata and duplicate-cue suppression;
 - tests for schedule boundaries, lifecycle, cue order, replay, and individual response variation.
 
-The event provider IDs are independent: the soccer fixture schedules **soccer.match**; the concert fixture schedules **concert.performance**. The scheduler knows the event kind and provider identifier, not the internal meaning of a goal, chorus, instrument, or audience response.
+The event provider IDs are independent: the soccer fixture schedules **soccer.match**; the concert fixture schedules **concert.performance**; market and craft fairs use **market.fair** and **craft.fair**. The scheduler knows the event kind and provider identifier, not the internal meaning of a goal, chorus, instrument, stall, or demonstration.
+
+For the wider Experience catalog and the optional Economy boundary, see [Experiences Beyond the Arena](EXPERIENCES_AND_OPTIONAL_ECONOMY.md). A fair can run without Economy: the shared schedule declares no Economy dependency, and economic interactions are opt-in adapters owned outside the neutral scheduler.
 
 ## Run the fixture
 
@@ -25,7 +27,7 @@ With the .NET 8 SDK, run:
     dotnet run --project examples/SingularityArenaFixture/SingularityArenaFixture.csproj
     dotnet test tests/MicroBundleDomain.Tests/MicroBundleDomain.Tests.csproj --configuration Release
 
-The console fixture schedules a soccer match and a concert at different times in the same venue, then walks a deterministic concert cue sequence through five distinct Digiten profiles. The output includes per-person intention and stable presentation-delay metadata.
+The console fixture schedules a soccer match, concert, market fair, and craft fair in separate time windows at the same venue, then walks a deterministic concert cue sequence through five distinct Digiten profiles. The output includes per-person intention and stable presentation-delay metadata.
 
 ## Audience intent is not physical movement
 
@@ -47,7 +49,7 @@ A chorus cue does not prove that the performer sang; a clap intention does not p
 
 This is a deterministic fixture, not a complete MicroBundle-powered production service:
 - The schedule is in memory and does not persist or dispatch wall-clock events.
-- The schedule prevents overlap for a venue, but does not yet model multiple stages/spaces, capacity, seats, admission, vendors, or ticketing.
+- The schedule prevents overlap for a venue, but does not yet model multiple stages/spaces, capacity, seats, admission, vendor/stall records, inventory, or ticketing.
 - The cue timeline is scripted and does not read a song file or an audio clock.
 - The audience decision policy is deliberately small; it does not yet model local social influence, view obstruction, accessibility constraints, fatigue, or participant arrival/exit.
 - Reaction delay is metadata. No scheduler waits on it.
