@@ -1,4 +1,5 @@
 using SingularityArenaFixture;
+using TheSingularityWorkshop.MicroBundleDomain;
 
 var arenaBundle = new SingularityArenaMicroBundle();
 var loadContext = new FixtureLoadContext(runtimeId: 9002);
