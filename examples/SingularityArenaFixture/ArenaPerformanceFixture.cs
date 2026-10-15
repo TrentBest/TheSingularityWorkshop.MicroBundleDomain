@@ -7,7 +7,9 @@ public enum ArenaEventKind
 {
     SoccerMatch,
     Concert,
-    Karaoke
+    Karaoke,
+    MarketFair,
+    CraftFair
 }
 
 /// <summary>Lifecycle owned by the scheduled event domain, not by presentation.</summary>
