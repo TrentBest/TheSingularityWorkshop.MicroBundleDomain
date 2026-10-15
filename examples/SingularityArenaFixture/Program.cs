@@ -89,6 +89,7 @@ if (schedule.Events.Count != 2 ||
 Console.WriteLine();
 Console.WriteLine("PASS: one venue schedules soccer and concert events; the concert cue fixture yields distinct, repeatable audience intentions.");
 Console.WriteLine("Boundary: schedule is in-memory; cue reactions are intent metadata, not evaluated poses, audio, locomotion, or a live crowd simulation.");
+return 0;
 
 internal sealed class FixtureLoadContext(ulong runtimeId) : IMicroBundleLoadContext
 {
