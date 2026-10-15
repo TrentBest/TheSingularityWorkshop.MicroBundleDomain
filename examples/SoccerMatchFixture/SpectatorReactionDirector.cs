@@ -12,13 +12,15 @@ internal sealed record SpectatorReaction(
     string DigitenId,
     string Name,
     string Section,
+    string Seat,
     string Gesture,
     int PresentationDelayMilliseconds,
     string TriggerEvent);
 
 /// <summary>
-/// Deterministic example projection from authoritative match events to individual spectator intent.
-/// This schedules illustrative reactions; it does not animate rigs or simulate crowd locomotion.
+/// Deterministic projection from authoritative match events to individual spectator intent.
+/// Seat anchors and delay metadata are available to a host adapter; this class does not
+/// schedule wall-clock work, animate rigs, or simulate crowd locomotion.
 /// </summary>
 internal sealed class SpectatorReactionDirector
 {
@@ -67,6 +69,7 @@ internal sealed class SpectatorReactionDirector
                 spectator.DigitenId,
                 spectator.Name,
                 spectator.Section,
+                spectator.Seat,
                 gesture,
                 spectator.ReactionDelayMilliseconds,
                 matchEvent.Name));
