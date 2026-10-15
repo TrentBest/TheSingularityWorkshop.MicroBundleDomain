@@ -72,6 +72,17 @@ public sealed class SingularityArenaFixtureTests
     }
 
     [Fact]
+    public void EncoreCueAllowsDifferentLevelsOfAudienceParticipation()
+    {
+        var reactions = CreateAudience().Observe(new ConcertCue(6, 116d, ConcertCueKind.EncoreRequested));
+
+        Assert.Equal(AudienceGestureIntent.Clap,
+            reactions.Single(reaction => reaction.DigitenId == "digiten.ari").Intent);
+        Assert.Equal(AudienceGestureIntent.WatchQuietly,
+            reactions.Single(reaction => reaction.DigitenId == "digiten.cy").Intent);
+    }
+
+    [Fact]
     public void DuplicateCueDoesNotEmitDuplicateAudienceReactions()
     {
         var audience = CreateAudience();
