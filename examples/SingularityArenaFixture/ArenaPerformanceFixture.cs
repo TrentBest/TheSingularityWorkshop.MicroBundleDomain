@@ -1,3 +1,5 @@
+using TheSingularityWorkshop.MicroBundleDomain;
+
 namespace SingularityArenaFixture;
 
 /// <summary>Event kinds supported by the shared venue schedule.</summary>
