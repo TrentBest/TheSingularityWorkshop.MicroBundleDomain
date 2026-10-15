@@ -21,6 +21,20 @@ var concert = schedule.Schedule(
     day.AddHours(21),
     day.AddHours(23),
     "concert.performance");
+var marketFair = schedule.Schedule(
+    "arena.event.market-fair-001",
+    "singularity-arena",
+    ArenaEventKind.MarketFair,
+    day.AddDays(1).AddHours(10),
+    day.AddDays(1).AddHours(14),
+    "market.fair");
+var craftFair = schedule.Schedule(
+    "arena.event.craft-fair-001",
+    "singularity-arena",
+    ArenaEventKind.CraftFair,
+    day.AddDays(1).AddHours(14),
+    day.AddDays(1).AddHours(18),
+    "craft.fair");
 
 concert.TransitionTo(ArenaEventState.DoorsOpen);
 concert.TransitionTo(ArenaEventState.InProgress);
@@ -42,6 +56,8 @@ Console.WriteLine($"Runtime: {loadContext.RuntimeId}");
 Console.WriteLine($"Venue: singularity-arena");
 Console.WriteLine($"[{soccer.StartsAt:HH:mm}–{soccer.EndsAt:HH:mm}] {soccer.Kind} -> {soccer.ProviderId}");
 Console.WriteLine($"[{concert.StartsAt:HH:mm}–{concert.EndsAt:HH:mm}] {concert.Kind} -> {concert.ProviderId}");
+Console.WriteLine($"[{marketFair.StartsAt:ddd HH:mm}–{marketFair.EndsAt:HH:mm}] {marketFair.Kind} -> {marketFair.ProviderId}");
+Console.WriteLine($"[{craftFair.StartsAt:ddd HH:mm}–{craftFair.EndsAt:HH:mm}] {craftFair.Kind} -> {craftFair.ProviderId}");
 Console.WriteLine();
 Console.WriteLine("CONCERT CUES -> INDIVIDUAL AUDIENCE INTENTIONS");
 
@@ -75,9 +91,11 @@ var chorusReactions = new ConcertAudienceReactionDirector(
     new("digiten.em", "south.s21", MusicalFamiliarity.Some, 50, false)
 ]).Observe(chorus);
 
-if (schedule.Events.Count != 2 ||
+if (schedule.Events.Count != 4 ||
     soccer.Kind != ArenaEventKind.SoccerMatch ||
     concert.Kind != ArenaEventKind.Concert ||
+    marketFair.Kind != ArenaEventKind.MarketFair ||
+    craftFair.Kind != ArenaEventKind.CraftFair ||
     chorusReactions.Select(reaction => reaction.Intent).Distinct().Count() < 3 ||
     chorusReactions.Select(reaction => reaction.DigitenId).Distinct(StringComparer.Ordinal).Count() != 5 ||
     concert.State != ArenaEventState.Completed)
@@ -87,7 +105,7 @@ if (schedule.Events.Count != 2 ||
 }
 
 Console.WriteLine();
-Console.WriteLine("PASS: one venue schedules soccer and concert events; the concert cue fixture yields distinct, repeatable audience intentions.");
+Console.WriteLine("PASS: one venue schedules soccer, concert, market fair, and craft fair events through distinct providers; concert audience intentions remain individual and repeatable.");
 Console.WriteLine("Boundary: schedule is in-memory; cue reactions are intent metadata, not evaluated poses, audio, locomotion, or a live crowd simulation.");
 return 0;
 
