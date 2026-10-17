@@ -51,6 +51,23 @@ Raw contact presence is not proof of support or slipping. Missing, stale, incomp
 
 The integration belongs at the composition/experience boundary or in a separately authored integration MicroBundle. Physics must not reference Gestures, Gestures must not reference Physics, and neither should depend on FSM_COS merely to be usable.
 
+## Cross-bundle physical composition: material arbitration example
+
+A higher-level experience may require a composite physical object—for example, a sword with a steel blade, copper guard, and wood grip. This is an **application-level MicroBundle arbitration workflow**. It belongs to the composition host and participating MicroBundles, not to the Physics NuGet package or this neutral contract package.
+
+The host-side workflow is:
+
+1. Discover the installed bundles and the material, property, model, and solver capabilities they explicitly expose.
+2. Gather their declared assembly/part relationships and material evidence through supported contracts; do not inspect private implementation fields.
+3. Invoke the appropriate domain capability to resolve material identity per part and assess which property evidence belongs to that material.
+4. Match requested model capabilities against the evidence and declared conditions; keep missing, ambiguous, stale, or incompatible results explicit.
+5. Resolve and validate typed model/solver providers at the host boundary, then assemble the requested experience from compatible capabilities.
+6. When relevant bundles or evidence are added, removed, or versioned, re-arbitrate the affected composition deterministically and retain provenance for each decision.
+
+The Physics repository currently supplies narrow domain evaluators for caller-provided evidence (assembly validation, material identity arbitration, property mapping, range assessment, and property-prerequisite checks). Those evaluators do not discover installed bundles, resolve provider IDs, own arbitration rounds, manage lifecycle changes, or assemble the final application. The host coordinates the workflow and invokes domain contracts through typed adapters.
+
+This example does not require MicroBundleDomain to reference Physics. Provider identifiers remain neutral metadata; the host or an integration MicroBundle resolves them to actual typed contracts. See the [Physics composition-level discovery boundary](https://github.com/TrentBest/TheSingularityWorkshop.Physics/blob/development/docs/COMPOSABLE_PHYSICS_MODELS_SOLVERS_EXPERIENCES.md#composition-level-material-discovery-and-physics-mapping) for the current domain-evaluator boundary.
+
 ## Minimum executable proof before standardizing an API
 
 Implement the resolver at the actual composition owner only after confirming its existing lifecycle and extension points. Cover at least:
