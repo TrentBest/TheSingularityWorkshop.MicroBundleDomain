@@ -408,4 +408,5 @@ If the host must add a new domain-specific branch every time a new capability ap
 
 - **[Getting Started](GETTING_STARTED.md)** — implement a capability.
 - **[MicroBundle Domain Theory](THEORY.md)** — the conceptual model.
+- **[Provider Resolution Contract](PROVIDER_RESOLUTION_CONTRACT.md)** — where provider lookup and typed invocation belong, and what the current descriptor does not guarantee.
 - **README** — user-facing overview and package value.
