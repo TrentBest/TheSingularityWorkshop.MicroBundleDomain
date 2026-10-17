@@ -88,3 +88,5 @@ Keep the first proof small and executable. Add a generic registry or new domain 
 - [Architecture](ARCHITECTURE.md)
 - [Adventure 6 — Arbitration](adventures/06-arbitration.md)
 - [Physics ↔ Gestures integration contract in Experiences](https://github.com/TrentBest/TheSingularityWorkshop.Experiences/blob/development/docs/PHYSICS_GESTURES_INTEGRATION.md)
+- [Elements MicroBundle: Periodic Table Showcase](ELEMENTS_MICROBUNDLE_SHOWCASE.md)
+- [Strategic Change Requests](STRATEGIC_CHANGE_REQUESTS.md)
