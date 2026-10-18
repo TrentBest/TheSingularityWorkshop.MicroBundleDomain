@@ -135,5 +135,6 @@ That is why the Domain package must remain neutral.
 ## Continue
 
 - [Adventure 6 — Arbitration](06-arbitration.md)
+- [Massive Simulations](../MASSIVE_SIMULATIONS.md) — see how capability delivery differs from entity state and simulation stepping.
 - [FAQ](../FAQ.md)
 - [Ecosystem Guide](../ECOSYSTEM.md)
