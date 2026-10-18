@@ -407,6 +407,7 @@ If the host must add a new domain-specific branch every time a new capability ap
 ## Further reading
 
 - **[Getting Started](GETTING_STARTED.md)** — implement a capability.
+- **[Massive Simulations](MASSIVE_SIMULATIONS.md)** — distinguish capability modularity from high-count world state, including domino and marble examples.
 - **[MicroBundle Domain Theory](THEORY.md)** — the conceptual model.
 - **[Provider Resolution Contract](PROVIDER_RESOLUTION_CONTRACT.md)** — where provider lookup and typed invocation belong, and what the current descriptor does not guarantee.
 - **README** — user-facing overview and package value.
