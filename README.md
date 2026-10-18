@@ -32,6 +32,7 @@ Start with the plain-language introduction and the 60-second example; then inspe
 
 ## 🟪 05 Documentation and theory
 
+[Massive simulations: dominoes, marbles, and scale](docs/MASSIVE_SIMULATIONS.md) · 
 [Start here](#start-here) · [See it work in 60 seconds](#-03--see-it-work-in-60-seconds) · [Documentation](docs/)
 
 ---
