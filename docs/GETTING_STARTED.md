@@ -42,7 +42,7 @@ The corrected package is staged as:
 
 ~~~xml
 <PackageReference Include="TheSingularityWorkshop.MicroBundleDomain"
-                  Version="2.0.0-alpha.1" />
+                  Version="1.0.1" />
 ~~~
 
 The package targets .NET 8 and has no dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
