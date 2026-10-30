@@ -72,7 +72,30 @@ public sealed class MicroBundleDescriptor
 /// <summary>
 /// Declares a dependency on another MicroBundle without interpreting its domain semantics.
 /// </summary>
-public readonly record struct MicroBundleDependency(ulong BundleId);
+/// <summary>
+/// Declares a dependency on another MicroBundle. A dependency without an exact
+/// version is retained for source compatibility but is not publishable in an
+/// immutable dependency closure.
+/// </summary>
+public readonly record struct MicroBundleDependency(ulong BundleId)
+{
+    /// <summary>Gets the exact required artifact version, or null for a legacy unresolved declaration.</summary>
+    public string? Version { get; init; }
+
+    /// <summary>Gets whether this dependency declares an exact artifact version.</summary>
+    public bool IsPinned => BundleId != 0 && !string.IsNullOrWhiteSpace(Version);
+
+    /// <summary>Creates a dependency on one exact MicroBundle artifact version.</summary>
+    public static MicroBundleDependency Pinned(ulong bundleId, string version)
+    {
+        if (bundleId == 0)
+            throw new ArgumentOutOfRangeException(nameof(bundleId), "A MicroBundle dependency ID must be non-zero.");
+
+        ArgumentException.ThrowIfNullOrWhiteSpace(version);
+
+        return new MicroBundleDependency(bundleId) { Version = version };
+    }
+}
 
 /// <summary>
 /// Identifies a provider exposed by a MicroBundle.
