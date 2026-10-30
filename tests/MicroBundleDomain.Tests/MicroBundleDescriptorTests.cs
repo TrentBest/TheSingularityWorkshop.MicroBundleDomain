@@ -30,6 +30,23 @@ public sealed class MicroBundleDescriptorTests
     }
 
     [Fact]
+    public void Descriptor_preserves_exact_version_dependency_pins()
+    {
+        var dependency = MicroBundleDependency.Pinned(7, "2.4.1");
+        var descriptor = new MicroBundleDescriptor(42, "1.0.0", new[] { dependency });
+
+        Assert.True(descriptor.Dependencies[0].IsPinned);
+        Assert.Equal("2.4.1", descriptor.Dependencies[0].Version);
+    }
+
+    [Fact]
+    public void Descriptor_rejects_invalid_exact_version_dependency_pins()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => MicroBundleDependency.Pinned(0, "1.0.0"));
+        Assert.Throws<ArgumentException>(() => MicroBundleDependency.Pinned(7, " "));
+    }
+
+    [Fact]
     public void Descriptor_preserves_declared_providers_without_interpreting_them()
     {
         var descriptor = new MicroBundleDescriptor(
