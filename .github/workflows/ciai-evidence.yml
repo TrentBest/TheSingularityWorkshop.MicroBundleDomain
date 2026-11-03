@@ -30,10 +30,10 @@ jobs:
           for attempt in $(seq 1 90); do
             response="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/build.yml/runs?head_sha=$TARGET_SHA&per_page=100")"
             matching="$(jq '[.workflow_runs[]? | select(
-              .path == ".github/workflows/build.yml" and
+              (.path | split("@")[0]) == ".github/workflows/build.yml" and
               .event == "push" and
               .head_branch == "development" and
-              .head_sha == env.TARGET_SHA
+              (.head_sha | ascii_downcase) == (env.TARGET_SHA | ascii_downcase)
             )] | sort_by(.run_number)' <<< "$response")"
             count="$(jq 'length' <<< "$matching")"
             if [ "$count" -gt 0 ] && [ "$(jq '[.[] | select(.status != "completed")] | length' <<< "$matching")" -eq 0 ]; then
@@ -83,10 +83,12 @@ jobs:
           mkdir -p artifacts
           dotnet run --project _tools/CiAi/samples/TheSingularityWorkshop.CiAi.ObserveRun --configuration Release -- TrentBest/TheSingularityWorkshop.MicroBundleDomain "$TARGET_SHA" artifacts/commit-observation.json
           jq -e '
+            .schema == "ciai.commit-observation.v2" and
             .complete == true and
             .discoveryComplete == true and
             (.requiredWorkflowResults | length) == 1 and
-            ([.requiredWorkflowResults[].State] | all(. == "passed"))
+            ([.requiredWorkflowResults[].State] | all(. == "passed")) and
+            ([.requiredWorkflowResults[].WorkflowPath] | index(".github/workflows/build.yml#'"${{ steps.source-run.outputs.run_id }}"'#'"${{ steps.source-run.outputs.run_attempt }}"'")) != null
           ' artifacts/commit-observation.json
 
       - name: Upload CiAi evidence
