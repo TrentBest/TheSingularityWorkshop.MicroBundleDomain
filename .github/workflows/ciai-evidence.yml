@@ -77,18 +77,21 @@ jobs:
           CIAI_GITHUB_TOKEN: ${{ github.token }}
           CIAI_REQUIRED_WORKFLOW_PATHS: .github/workflows/build.yml#${{ steps.source-run.outputs.run_id }}#${{ steps.source-run.outputs.run_attempt }}
           TARGET_SHA: ${{ github.sha }}
+          SOURCE_RUN_ID: ${{ steps.source-run.outputs.run_id }}
+          SOURCE_RUN_ATTEMPT: ${{ steps.source-run.outputs.run_attempt }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p artifacts
           dotnet run --project _tools/CiAi/samples/TheSingularityWorkshop.CiAi.ObserveRun --configuration Release -- TrentBest/TheSingularityWorkshop.MicroBundleDomain "$TARGET_SHA" artifacts/commit-observation.json
-          jq -e '
+          expected_workflow=".github/workflows/build.yml#${SOURCE_RUN_ID}#${SOURCE_RUN_ATTEMPT}"
+          jq -e --arg expected_workflow "$expected_workflow" '
             .schema == "ciai.commit-observation.v2" and
             .complete == true and
             .discoveryComplete == true and
             (.requiredWorkflowResults | length) == 1 and
             ([.requiredWorkflowResults[].State] | all(. == "passed")) and
-            ([.requiredWorkflowResults[].WorkflowPath] | index(".github/workflows/build.yml#'"${{ steps.source-run.outputs.run_id }}"'#'"${{ steps.source-run.outputs.run_attempt }}"'")) != null
+            ([.requiredWorkflowResults[].WorkflowPath] | index($expected_workflow)) != null
           ' artifacts/commit-observation.json
 
       - name: Upload CiAi evidence
