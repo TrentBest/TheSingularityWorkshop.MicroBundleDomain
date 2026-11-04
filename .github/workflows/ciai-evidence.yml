@@ -1,0 +1,129 @@
+name: CiAi Development Evidence
+
+on:
+  push:
+    branches: [development]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: ciai-evidence-${{ github.repository }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    name: Validate exact development build evidence
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Resolve the completed build workflow for this exact commit
+        id: source-run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          matching='[]'
+          for attempt in $(seq 1 90); do
+            response="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/build.yml/runs?head_sha=$TARGET_SHA&per_page=100")"
+            matching="$(jq '[.workflow_runs[]? | select(
+              (.path | split("@")[0]) == ".github/workflows/build.yml" and
+              .event == "push" and
+              .head_branch == "development" and
+              (.head_sha | ascii_downcase) == (env.TARGET_SHA | ascii_downcase)
+            )] | sort_by(.run_number)' <<< "$response")"
+            count="$(jq 'length' <<< "$matching")"
+            if [ "$count" -gt 0 ] && [ "$(jq '[.[] | select(.status != "completed")] | length' <<< "$matching")" -eq 0 ]; then
+              break
+            fi
+            echo "Waiting for exact build.yml run for $TARGET_SHA ($attempt/90)..."
+            sleep 20
+          done
+
+          count="$(jq 'length' <<< "$matching")"
+          if [ "$count" -ne 1 ]; then
+            echo "::error::Expected exactly one completed build.yml push run for $TARGET_SHA; found $count."
+            exit 1
+          fi
+
+          run_id="$(jq -r '.[0].id' <<< "$matching")"
+          run_attempt="$(jq -r '.[0].run_attempt' <<< "$matching")"
+          conclusion="$(jq -r '.[0].conclusion // "unknown"' <<< "$matching")"
+          run_url="$(jq -r '.[0].html_url' <<< "$matching")"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "run_attempt=$run_attempt" >> "$GITHUB_OUTPUT"
+          echo "conclusion=$conclusion" >> "$GITHUB_OUTPUT"
+          echo "run_url=$run_url" >> "$GITHUB_OUTPUT"
+          echo "Resolved exact build run $run_id attempt $run_attempt ($conclusion)."
+
+      - name: Check out pinned CiAi observer source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: TrentBest/TheSingularityWorkshop.CiAi
+          ref: 49a802fcab60fa7411b01892072d7e2c8a2c72a9
+          path: _tools/CiAi
+          persist-credentials: false
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Observe and evaluate the exact build run with CiAi
+        env:
+          CIAI_GITHUB_TOKEN: ${{ github.token }}
+          CIAI_REQUIRED_WORKFLOW_PATHS: .github/workflows/build.yml#${{ steps.source-run.outputs.run_id }}#${{ steps.source-run.outputs.run_attempt }}
+          TARGET_SHA: ${{ github.sha }}
+          SOURCE_RUN_ID: ${{ steps.source-run.outputs.run_id }}
+          SOURCE_RUN_ATTEMPT: ${{ steps.source-run.outputs.run_attempt }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          dotnet run --project _tools/CiAi/samples/TheSingularityWorkshop.CiAi.ObserveRun --configuration Release -- TrentBest/TheSingularityWorkshop.MicroBundleDomain "$TARGET_SHA" artifacts/commit-observation.json
+          expected_workflow=".github/workflows/build.yml#${SOURCE_RUN_ID}#${SOURCE_RUN_ATTEMPT}"
+          jq -e --arg expected_workflow "$expected_workflow" '
+            .schema == "ciai.commit-observation.v2" and
+            .complete == true and
+            .discoveryComplete == true and
+            (.requiredWorkflowResults | length) == 1 and
+            ([.requiredWorkflowResults[].State] | all(. == "passed")) and
+            ([.requiredWorkflowResults[].WorkflowPath] | index($expected_workflow)) != null
+          ' artifacts/commit-observation.json
+
+      - name: Upload CiAi evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ciai-development-evidence-${{ github.sha }}
+          path: |
+            artifacts/commit-observation.json
+            artifacts/commit-observation.md
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Summarize exact source run
+        if: always()
+        env:
+          TARGET_SHA: ${{ github.sha }}
+          SOURCE_RUN_URL: ${{ steps.source-run.outputs.run_url }}
+          SOURCE_RUN_CONCLUSION: ${{ steps.source-run.outputs.conclusion }}
+          SOURCE_RUN_ID: ${{ steps.source-run.outputs.run_id }}
+          SOURCE_RUN_ATTEMPT: ${{ steps.source-run.outputs.run_attempt }}
+        shell: bash
+        run: |
+          {
+            echo "## CiAi development evidence"
+            echo
+            echo "- Repository: TrentBest/TheSingularityWorkshop.MicroBundleDomain"
+            echo "- Exact source SHA: `$TARGET_SHA`"
+            echo "- Build run: ${SOURCE_RUN_URL:-not resolved}"
+            echo "- Run identity: ${SOURCE_RUN_ID:-unknown} / attempt ${SOURCE_RUN_ATTEMPT:-unknown}"
+            echo "- Provider conclusion: ${SOURCE_RUN_CONCLUSION:-unknown}"
+            echo "- CiAi observer source: 49a802fcab60fa7411b01892072d7e2c8a2c72a9"
+            echo
+            echo "This is read-only evidence. It does not merge, publish, release, or deploy."
+          } >> "$GITHUB_STEP_SUMMARY"
