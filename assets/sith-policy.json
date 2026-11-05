@@ -1,0 +1,27 @@
+{
+  "repository": "TrentBest/TheSingularityWorkshop.MicroBundleDomain",
+  "policy": "exactly-master-and-development",
+  "required_branches": [
+    "development",
+    "master"
+  ],
+  "actual_branches": [
+    "architecture/runtime-contract-ownership",
+    "chore/standardize-ci-microbundle-domain",
+    "design/game-domain-boundaries",
+    "development",
+    "docs/benchmarking",
+    "docs/readme-standard",
+    "feature/stable-parameter-identity",
+    "master",
+    "release-prep/microbundle-ecosystem-foundation",
+    "work/ciai-evidence-adoption",
+    "work/ciai-evidence-submodule-checkout",
+    "work/soccer-domain-microbundle"
+  ],
+  "branch_count": 12,
+  "status": "NON-COMPLIANT",
+  "evaluated_at": "2026-11-05T04:25:50Z",
+  "workflow_run": "https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/runs/41967742719",
+  "triggering_commit": "f3bae18bf59ba38fb429722a963fe09c162df1e1"
+}
