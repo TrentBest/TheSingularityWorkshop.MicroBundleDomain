@@ -3,6 +3,7 @@
 # TheSingularityWorkshop.MicroBundleDomain
 
 
+[![Sith Policy](assets/sith-policy.svg)](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/workflows/sith-policy.yml)
 > **The neutral contract for independently authored capabilities.**
 
 A MicroBundle can identify itself, declare requirements, accept configuration, enter a runtime, and participate in composition without forcing a host to understand its private domain.
