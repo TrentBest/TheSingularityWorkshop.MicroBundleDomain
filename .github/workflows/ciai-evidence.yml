@@ -63,14 +63,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: TrentBest/TheSingularityWorkshop.CiAi
-          ref: 49a802fcab60fa7411b01892072d7e2c8a2c72a9
+          ref: 9e01a4be81fb94fa7bb2d4619196646adf3463f4
           path: _tools/CiAi
+          submodules: recursive
           persist-credentials: false
 
       - name: Set up .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Observe and evaluate the exact build run with CiAi
         env:
@@ -123,7 +124,7 @@ jobs:
             echo "- Build run: ${SOURCE_RUN_URL:-not resolved}"
             echo "- Run identity: ${SOURCE_RUN_ID:-unknown} / attempt ${SOURCE_RUN_ATTEMPT:-unknown}"
             echo "- Provider conclusion: ${SOURCE_RUN_CONCLUSION:-unknown}"
-            echo "- CiAi observer source: 49a802fcab60fa7411b01892072d7e2c8a2c72a9"
+            echo "- CiAi observer source: 9e01a4be81fb94fa7bb2d4619196646adf3463f4"
             echo
             echo "This is read-only evidence. It does not merge, publish, release, or deploy."
           } >> "$GITHUB_STEP_SUMMARY"
