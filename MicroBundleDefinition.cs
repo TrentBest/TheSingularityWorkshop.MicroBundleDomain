@@ -50,7 +50,7 @@ public sealed class MicroBundleDefinition
     /// author-assigned parameter ID. Legacy fields without IDs remain readable,
     /// but tooling must not treat their names or paths as stable identity.
     /// </summary>
-    public bool HasStableParameterIds => Flatten(_fields).All(field => field.ParameterId is not null);
+    public bool HasStableParameterIds => Flatten(_fields).All(item => item.ParameterId is not null);
 
     private static IReadOnlyList<MicroBundleField> MaterializeFields(
         IEnumerable<MicroBundleField>? fields)
