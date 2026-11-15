@@ -666,7 +666,7 @@ For the complete result matrix, methodology, and instructions for finding the me
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
 **Next release:** `1.0.1`  
-**Target:** .NET 8  
+**Target:** .NET 10  
 **License:** MIT
 
 The repository previously published a `1.0.0` package before the ownership boundary was finalized. That package is immutable on NuGet.
