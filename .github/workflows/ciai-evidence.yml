@@ -67,6 +67,7 @@ jobs:
           path: _tools/CiAi
           submodules: recursive
           persist-credentials: false
+          submodules: recursive
 
       - name: Set up .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
@@ -120,7 +121,7 @@ jobs:
             echo "## CiAi development evidence"
             echo
             echo "- Repository: TrentBest/TheSingularityWorkshop.MicroBundleDomain"
-            echo "- Exact source SHA: `$TARGET_SHA`"
+            echo "- Exact source SHA: \`$TARGET_SHA\`"
             echo "- Build run: ${SOURCE_RUN_URL:-not resolved}"
             echo "- Run identity: ${SOURCE_RUN_ID:-unknown} / attempt ${SOURCE_RUN_ATTEMPT:-unknown}"
             echo "- Provider conclusion: ${SOURCE_RUN_CONCLUSION:-unknown}"
