@@ -45,7 +45,7 @@ The corrected package is staged as:
                   Version="1.0.1" />
 ~~~
 
-The package targets .NET 8 and has no dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
+The current source targets .NET 10 and has no dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
 
 ## 2. Define your capability
 
@@ -95,7 +95,7 @@ Suppose the greeting capability needs a localization capability:
 ~~~csharp
 public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
 [
-    MicroBundleDependencyRequest.Unconfigured(2001)
+    MicroBundleDependencyRequest.Unconfigured(2001, "1.0.0")
 ];
 ~~~
 
@@ -110,7 +110,7 @@ public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
 ];
 ~~~
 
-The important distinction is that your bundle **declares the dependency**.
+The important distinction is that your bundle **declares the dependency**. Prefer the version-pinned overload for deterministic artifact selection. The one-argument overload is retained only for legacy in-process compatibility and is obsolete for new code.
 
 It does not reach into the host and load it itself.
 
@@ -194,7 +194,11 @@ The parameter IDs belong to the capability's schema. Keep them unchanged when re
 
 A tooling or GUI package can inspect this schema without knowing what a Greeting actually does.
 
-## 7. Understand the repository boundary
+## 7. Understand identity before publishing
+
+The current runtime contract uses a non-zero numeric `ulong` identity. Portable artifact identity and repository-local storage handles are separate concepts; do not assume a numeric repository address is globally portable. Read [Identity Model](IDENTITY_MODEL.md) before designing manifests, cross-repository dependencies, or publisher workflows. The portable-to-runtime mapping remains a cross-repository contract under active reconciliation.
+
+## 8. Understand the repository boundary
 
 When you need to discover or materialize capabilities, add a repository layer.
 
@@ -222,7 +226,7 @@ The repository can be your own implementation. It does not have to be the Singul
 
 Read **[Ecosystem Guide](ECOSYSTEM.md)** for the full model.
 
-## 8. Understand what happens after your package
+## 9. Understand what happens after your package
 
 A typical composition pipeline is:
 
