@@ -45,7 +45,7 @@ The corrected package is staged as:
                   Version="1.0.1" />
 ~~~
 
-The current source targets .NET 10 and has no dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
+The published NuGet package `1.0.1` targets .NET 8. The current `development` source targets .NET 10; use a project reference when building that source, and do not assume the published package and current development target frameworks are identical. Neither source nor package has a dependency on FSM_COS, MicroBundleRepository, REST, storage, GUI, or a host application.
 
 ## 2. Define your capability
 
