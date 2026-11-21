@@ -10,7 +10,7 @@ The distinction is required for portable artifact exchange. A number allocated b
 |---|---|---|---|
 | Portable semantic identity | Canonical ontology identifier; not yet a first-class type in the current Domain API | Domain author / semantic model | Which capability is being named independently of a particular repository |
 | Runtime/domain identity | Non-zero `ulong` exposed by `MicroBundleDescriptor.Id` and `IMicroBundle.Id` | MicroBundleDomain and composition contract | The identifier current in-process consumers use to refer to a participating MicroBundle |
-| Repository-scoped storage handle | Non-zero `ulong` in the current numeric artifact address; the proposed binding is staged in Repository PR #39 | MicroBundleRepository implementation | A repository-scoped locator; it is not a portable semantic or runtime identity |
+| Repository-scoped storage handle | Non-zero `ulong` in `MicroBundleArtifactAddress` | MicroBundleRepository implementation | A repository-scoped locator; it is not a portable semantic or runtime identity |
 
 An immutable portable artifact revision additionally includes the exact version and SHA-256 digest:
 
@@ -35,7 +35,7 @@ The digest identifies bytes. It does not identify the publisher, prove authoriza
 
 `(ontology, exact version, SHA-256) → repository-scoped storage handle → verified artifact bytes`.
 
-Repository PR #39 proposes this durable mapping. It does not, by itself, map a portable identity to the runtime/domain ID used by MicroBundle dependencies and FSM_COS manifests.
+Repository PR #39 implemented this durable mapping in canonical Repository `development`. It does not, by itself, map a portable identity to the runtime/domain ID used by MicroBundle dependencies and FSM_COS manifests.
 
 **Mapping B — runtime identity (cross-repository contract):**
 
@@ -57,11 +57,13 @@ A repository-scoped storage handle may be used within that repository's artifact
 
 ## Current implementation and compatibility
 
-The current Domain API exposes `MicroBundleDescriptor.Id` as a non-zero `ulong`. `MicroBundleDependency` and `MicroBundleDependencyRequest` currently express dependencies using numeric bundle IDs; the request type also carries optional opaque configuration bytes and supports exact-version pinning.
+The current Domain API exposes `MicroBundleDescriptor.Id` and `IMicroBundle.Id` as the runtime/domain identity. `MicroBundleDependency` and `MicroBundleDependencyRequest` currently express dependencies using numeric runtime bundle IDs; the request type also carries optional opaque configuration bytes and supports exact-version pinning.
 
-The repository's current development contract addresses artifacts by numeric bundle ID, version, and SHA-256. A separate repository development change set proposes portable `(ontology, version, SHA-256)` identity and durable repository-scoped bindings. Those changes are under review in the Repository PR chain #39 → #40 → #41; they are not yet part of the canonical development branch. The Domain currently has no first-class ontology identity type or portable-to-runtime mapping.
+The Repository PR chain #39 → #40 → #41 is now merged into canonical Repository `development`. It implements portable `(ontology, exact version, SHA-256)` identity, durable repository-scoped bindings, REST identity ingestion/resolution with Workshop-only mutation authorization, and the authenticated publisher CLI. The repository's numeric artifact address is now explicitly a repository-local storage handle. The REST delivery package no longer references Domain or FSM_COS; a separate `TheSingularityWorkshop.MicroBundleRepository.FSM_COS` integration package owns runtime catalog/materialization.
 
-Therefore this document does **not** silently reinterpret existing numeric IDs, add an unverified ontology-to-runtime mapping, or claim that portable dependency resolution is complete. Existing numeric manifests and dependencies remain on their current contract until the mapping is specified, tested, and integrated with FSM_COS and its consumers.
+That integration package accepts an explicit `runtimeId -> MicroBundleArtifactAddress` map and verifies both `IMicroBundle.Id` and `MicroBundleDescriptor.Id` after materialization. It proves that runtime IDs and repository-local storage handles can differ. It does **not** yet derive the mapping from portable semantic identity. The Domain still has no first-class ontology identity type or portable-to-runtime mapping.
+
+Therefore this document does **not** silently reinterpret existing numeric IDs, add an unverified ontology-to-runtime mapping, or claim that portable dependency resolution is complete. Existing numeric manifests and dependencies remain on their current contract until the Domain-owned mapping is specified, tested, and integrated with FSM_COS and its consumers.
 
 ## Required proof before changing the public runtime contract
 
@@ -88,4 +90,6 @@ These are cross-repository proofs. A unit test of a value object or repository i
 - [Provider resolution contract](PROVIDER_RESOLUTION_CONTRACT.md)
 - [Repository implementation map](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/blob/development/docs/DOMAIN_MAP.md)
 - [Domain identity reconciliation issue #28](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/issues/28)
+- [Repository portable identity reconciliation](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/blob/development/docs/IDENTITY_RECONCILIATION.md)
+- [Repository FSM_COS integration adapter](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/tree/development/src/FSM_COS/TheSingularityWorkshop.MicroBundleRepository.FSM_COS)
 - [Repository portable identity PR #39](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/pull/39)
