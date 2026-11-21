@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace TheSingularityWorkshop.MicroBundleDomain;
 
 /// <summary>
