@@ -6,6 +6,8 @@
     "master"
   ],
   "actual_branches": [
+    "architecture/ontology-first-manifest-runtime-index",
+    "architecture/portable-dependency-contract",
     "architecture/runtime-contract-ownership",
     "chore/standardize-ci-microbundle-domain",
     "design/game-domain-boundaries",
@@ -19,9 +21,9 @@
     "work/ciai-evidence-submodule-checkout",
     "work/soccer-domain-microbundle"
   ],
-  "branch_count": 12,
+  "branch_count": 14,
   "status": "NON-COMPLIANT",
-  "evaluated_at": "2026-11-20T12:52:39Z",
-  "workflow_run": "https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/runs/44739431115",
-  "triggering_commit": "72067ad114779538a13172dfc36caf43adaaceb5"
+  "evaluated_at": "2026-11-21T12:38:57Z",
+  "workflow_run": "https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/actions/runs/44904940698",
+  "triggering_commit": "cd73eb5b51ead5463c7d8fd80eefc501477cf677"
 }
