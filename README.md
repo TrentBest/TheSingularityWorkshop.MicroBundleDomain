@@ -655,6 +655,9 @@ For the complete result matrix, methodology, and instructions for finding the me
 
 - **[Identity Model](docs/IDENTITY_MODEL.md)** — portable semantic identity, runtime identity, repository-local handles, and the cross-repository mapping boundary.
 - **[Stable Parameter Identity](docs/STABLE_PARAMETER_IDS.md)** — durable identity for configurable fields.
+- **[Contract Reference](docs/CONTRACT_REFERENCE.md)** — implemented API surface and explicit responsibility boundaries.
+- **[Identity Model](docs/IDENTITY_MODEL.md)** — portable, runtime, and repository identity.
+- **[Stable Parameter Identity](docs/STABLE_PARAMETER_IDS.md)** — durable configurable-field IDs.
 - **[What Is a MicroBundle?](docs/WHAT_IS_A_MICROBUNDLE.md)** — plain-language introduction.
 - **[Adventures](docs/ADVENTURES.md)** — learn by progression rather than reference.
 - **[Getting Started](docs/GETTING_STARTED.md)** — build your first capability.
