@@ -41,6 +41,7 @@ public sealed class PortableMicroBundleReferenceTests
     [InlineData("ontology//other")]
     [InlineData("ontology/../other")]
     [InlineData("ontology\\other")]
+    [InlineData("ontology\u0000other")]
     public void Reference_rejects_noncanonical_ontology(string ontology)
     {
         Assert.Throws<ArgumentException>(() =>
@@ -63,6 +64,7 @@ public sealed class PortableMicroBundleReferenceTests
     [InlineData("1?query")]
     [InlineData("1#fragment")]
     [InlineData("1%2F0")]
+    [InlineData("1\u0000.0")]
     public void Reference_rejects_unsafe_or_missing_version(string version)
     {
         Assert.Throws<ArgumentException>(() =>
