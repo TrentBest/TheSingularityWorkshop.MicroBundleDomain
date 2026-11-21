@@ -404,6 +404,10 @@ That is the test.
 
 If the host must add a new domain-specific branch every time a new capability appears, the composition boundary has failed.
 
+## Identity is not one number
+
+The current runtime contract exposes a non-zero numeric `ulong`, but portable artifact identity and repository-local storage handles are separate concerns. Do not treat an ID allocated by one repository as a globally stable semantic identity. The normative distinctions, current compatibility state, and cross-repository proof obligations are documented in [Identity Model](IDENTITY_MODEL.md).
+
 ## Further reading
 
 - **[Getting Started](GETTING_STARTED.md)** — implement a capability.
