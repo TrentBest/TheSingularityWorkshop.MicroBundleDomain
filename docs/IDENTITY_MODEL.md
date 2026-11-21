@@ -20,6 +20,14 @@ An immutable portable artifact revision additionally includes the exact version 
 
 The digest identifies bytes. It does not identify the publisher, prove authorization, or establish that the bytes are safe to execute.
 
+## Ontology identifier is not an ontology signature
+
+The portable ontology identifier used in an artifact revision (for example, `TheSingularityWorkshop.Renderer`) names a capability independently of a repository. It is a canonical string identity for artifact exchange.
+
+Do not conflate that identifier with the nine-layer integer `OntologySignature` found in the older Architect / Singularity Hub work. That signature is a semantic coordinate composed of nine integer layer values, with editor-facing strings resolved through a separate registry. It describes semantic placement/structure; it is not the repository artifact key, the MicroBundle runtime `ulong`, or a repository-local storage handle.
+
+These concepts may eventually be related by an explicit Domain-owned contract, but the current MicroBundleDomain API does not define that relationship. Until such a contract exists, keep them as distinct values and do not derive one from the other.
+
 ## Ownership rules
 
 1. A capability author owns its semantic identity and versioning intent.
