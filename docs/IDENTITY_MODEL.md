@@ -8,9 +8,9 @@ The distinction is required for portable artifact exchange. A number allocated b
 
 | Layer | Current representation | Owner | Meaning |
 |---|---|---|---|
-| Portable semantic identity | Canonical ontology identifier | Domain author / semantic model | Which capability is being named independently of a particular repository |
+| Portable semantic identity | Canonical ontology identifier; not yet a first-class type in the current Domain API | Domain author / semantic model | Which capability is being named independently of a particular repository |
 | Runtime/domain identity | Non-zero `ulong` exposed by `MicroBundleDescriptor.Id` and `IMicroBundle.Id` | MicroBundleDomain and composition contract | The identifier current in-process consumers use to refer to a participating MicroBundle |
-| Repository-local storage handle | Non-zero `ulong` inside a repository artifact address/binding | MicroBundleRepository implementation | A private locator allocated and persisted by one repository; it is not portable |
+| Repository-scoped storage handle | Non-zero `ulong` in the current numeric artifact address; the proposed binding is staged in Repository PR #39 | MicroBundleRepository implementation | A repository-scoped locator; it is not a portable semantic or runtime identity |
 
 An immutable portable artifact revision additionally includes the exact version and SHA-256 digest:
 
@@ -24,14 +24,24 @@ The digest identifies bytes. It does not identify the publisher, prove authoriza
 
 1. A capability author owns its semantic identity and versioning intent.
 2. MicroBundleDomain owns the runtime contract and the meaning of its current numeric `Id`.
-3. A repository owns any private numeric handle and the durable mapping to a portable artifact revision.
+3. A repository owns its repository-scoped numeric handle and the durable mapping from a portable artifact revision to that handle.
 4. A composition host owns resolution of its manifest/dependency graph and must not infer identity from display names, assembly names, paths, or repository-local handles.
 5. An artifact hash is an integrity check over exact bytes. It is not a substitute for publisher authentication or trust policy.
 6. The repository does not own ontology meaning, dependency semantics, arbitration, or runtime assembly.
 
-## Mapping is an explicit boundary
+## There are two different mappings
 
-A portable revision and a runtime/domain identifier are not interchangeable. When a host needs to compose a portable artifact, it must obtain a validated binding from an authorized repository/materialization boundary and verify that the returned artifact matches the requested portable revision.
+**Mapping A — artifact location (Repository responsibility):**
+
+`(ontology, exact version, SHA-256) → repository-scoped storage handle → verified artifact bytes`.
+
+Repository PR #39 proposes this durable mapping. It does not, by itself, map a portable identity to the runtime/domain ID used by MicroBundle dependencies and FSM_COS manifests.
+
+**Mapping B — runtime identity (cross-repository contract):**
+
+`portable semantic identity → runtime/domain ID`.
+
+This mapping is not yet implemented as a first-class Domain contract. It must be specified with FSM_COS and consumers before a portable artifact can safely become a runtime dependency. The host/materializer must verify the descriptor's runtime ID against the intended binding; it must not assume that the repository storage handle is that ID.
 
 The mapping contract must reject:
 
@@ -43,13 +53,13 @@ The mapping contract must reject:
 - an artifact whose bytes do not match its SHA-256;
 - an ambiguous dependency resolution.
 
-A repository-local storage handle must not escape as if it were a globally stable semantic or runtime identifier.
+A repository-scoped storage handle may be used within that repository's artifact API, but it must never be interpreted as a globally stable semantic or runtime identifier.
 
 ## Current implementation and compatibility
 
 The current Domain API exposes `MicroBundleDescriptor.Id` as a non-zero `ulong`. `MicroBundleDependency` and `MicroBundleDependencyRequest` currently express dependencies using numeric bundle IDs; the request type also carries optional opaque configuration bytes and supports exact-version pinning.
 
-The repository's current development contract addresses artifacts by numeric bundle ID, version, and SHA-256. A separate repository development change set proposes portable `(ontology, version, SHA-256)` identity and durable repository-local bindings. Those changes are under review in the Repository PR chain #39 → #40 → #41; they are not yet part of the canonical development branch.
+The repository's current development contract addresses artifacts by numeric bundle ID, version, and SHA-256. A separate repository development change set proposes portable `(ontology, version, SHA-256)` identity and durable repository-scoped bindings. Those changes are under review in the Repository PR chain #39 → #40 → #41; they are not yet part of the canonical development branch. The Domain currently has no first-class ontology identity type or portable-to-runtime mapping.
 
 Therefore this document does **not** silently reinterpret existing numeric IDs, add an unverified ontology-to-runtime mapping, or claim that portable dependency resolution is complete. Existing numeric manifests and dependencies remain on their current contract until the mapping is specified, tested, and integrated with FSM_COS and its consumers.
 
@@ -57,16 +67,17 @@ Therefore this document does **not** silently reinterpret existing numeric IDs, 
 
 The complete cross-repository acceptance suite must prove:
 
-1. A portable ontology revision maps deterministically to the intended runtime/domain identity.
-2. Repository-local handles remain private and can differ between repositories.
-3. Repeated ingestion of the same immutable revision is idempotent.
-4. Conflicting or duplicate mappings fail closed.
-5. Unknown ontology identities do not receive invented runtime IDs.
-6. Version and SHA-256 mismatches are rejected.
-7. Dependency closure resolves through the same explicit mapping boundary.
-8. Existing numeric manifests either remain compatible or have a documented, tested migration path.
-9. Mapping behavior is deterministic under concurrent writers and repository restart.
-10. FSM_COS, Renderer, Visualize, AnyApp, and repository adapters agree on the same semantics.
+1. The portable ontology identity has one canonical representation and explicit version semantics.
+2. A portable revision maps deterministically to a repository-scoped storage handle; handles may differ between repositories.
+3. A separate portable-to-runtime mapping resolves the intended runtime/domain identity without reusing the storage handle.
+4. Repeated ingestion of the same immutable revision is idempotent.
+5. Conflicting or duplicate mappings fail closed.
+6. Unknown ontology identities do not receive invented runtime IDs.
+7. Version and SHA-256 mismatches are rejected.
+8. Dependency closure resolves through the explicit portable-to-runtime mapping.
+9. Existing numeric manifests either remain compatible or have a documented, tested migration path.
+10. Mapping behavior is deterministic under concurrent writers and repository restart.
+11. FSM_COS, Renderer, Visualize, AnyApp, and repository adapters agree on the same semantics.
 
 These are cross-repository proofs. A unit test of a value object or repository index alone is not sufficient to claim end-to-end identity reconciliation.
 
