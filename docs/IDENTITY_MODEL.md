@@ -1,102 +1,191 @@
-# MicroBundle Identity Model
+# MicroBundle Identity and Runtime Resolution
 
-This document is the normative boundary map for identity. It distinguishes the identity a capability author assigns, the runtime identifier used by current composition contracts, and the private numeric handle a repository may use internally.
+This document defines how portable MicroBundle identity becomes a fast local runtime handle. The key distinction is simple:
 
-The distinction is required for portable artifact exchange. A number allocated by one repository must never silently become a globally meaningful capability identity.
+**Ontology strings travel. Numeric indexes stay local.**
 
-## The three identity layers
+An experience manifest must describe what it consumes using portable ontology strings and exact versions. Repository and platform caches may each map those strings to numeric indexes for fast lookup, but those indexes belong to their respective storage/runtime layers and must never leak into a portable manifest.
 
-| Layer | Current representation | Owner | Meaning |
-|---|---|---|---|
-| Portable semantic identity | Canonical ontology identifier; not yet a first-class type in the current Domain API | Domain author / semantic model | Which capability is being named independently of a particular repository |
-| Runtime/domain identity | Non-zero `ulong` exposed by `MicroBundleDescriptor.Id` and `IMicroBundle.Id` | MicroBundleDomain and composition contract | The identifier current in-process consumers use to refer to a participating MicroBundle |
-| Repository-scoped storage handle | Non-zero `ulong` in `MicroBundleArtifactAddress` | MicroBundleRepository implementation | A repository-scoped locator; it is not a portable semantic or runtime identity |
+## End-to-end lifecycle
 
-An immutable portable artifact revision additionally includes the exact version and SHA-256 digest:
+### 1. Creator registration
+
+A MicroBundle creator registers a capability using its canonical ontology string, such as `TheSingularityWorkshop.Renderer`, and publishes a version.
+
+The MicroBundle Repository owns the mapping from the ontology/revision to its repository storage index. The repository stores the immutable artifact payload in its blob at that index.
+
+The repository index is an implementation detail of repository storage. It is not the MicroBundle's portable identity and is not the FSM_COS runtime ID.
+
+An immutable published revision is identified by:
 
 ```text
-(canonical ontology, exact version, SHA-256)
+(canonical ontology string, exact version, SHA-256)
 ```
 
-The digest identifies bytes. It does not identify the publisher, prove authorization, or establish that the bytes are safe to execute.
+The ontology string identifies the capability. The version selects its release. The digest verifies the exact immutable bytes.
+
+### 2. Experience authoring and immediate acquisition
+
+A developer opens the Workshop experience/editor in their platform of choice. The editor presents the repository's diegetic representation of available MicroBundles.
+
+When the developer selects a MicroBundle, the platform immediately requests it by ontology string (and the selected version/revision when applicable). The repository resolves that portable identifier through its own index and returns the artifact bytes. The platform verifies the artifact and places it in its local cache.
+
+This is acquisition for authoring and execution; it does not wait until the experience is published.
+
+### 3. Portable experience manifest
+
+When the developer publishes the experience, the editor creates a manifest describing the MicroBundles selected for that experience.
+
+The manifest records each MicroBundle's:
+- canonical ontology string;
+- exact approved version;
+- integrity digest/revision information required to retrieve and verify the immutable artifact.
+
+The manifest does **not** record:
+- the repository's blob index;
+- a machine's local cache index;
+- an FSM_COS runtime slot/handle.
+
+The manifest is portable between platforms and machines because it carries semantic identity and version constraints, not storage addresses.
+
+### 4. FSM_COS local resolution and fast execution
+
+FSM_COS reads the manifest's ontology string and resolves it through the platform's local cached mapping.
+
+For example:
+
+```text
+"TheSingularityWorkshop.Visualize" -> local slot 10
+```
+
+The local mapping returns the compact numeric handle used by the runtime. FSM_COS can then use its existing `ulong`-based contracts and array/index dereferencing for the hot path.
+
+Before execution, FSM_COS verifies that the locally cached artifact matches the manifest's exact approved version and integrity identity. A missing artifact, unknown ontology, incompatible version, or digest mismatch fails closed. It must not silently fetch or substitute a newer version during composition.
+
+The runtime handle is local to the platform's mapping/cache namespace. It is not portable identity and must not be serialized into the experience manifest.
+
+### 5. Creator updates and consumer approval
+
+When a creator publishes a newer version, the repository/Workshop ecosystem notifies consumers that an update is available.
+
+An existing experience is not silently upgraded. Its author opens the editor, reviews and manually approves the candidate MicroBundle version, validates that the experience still works, and then publishes a new version of the experience manifest referencing the newly approved MicroBundle version.
+
+The old manifest continues to identify the old approved version. Notifications do not mutate a published manifest or change a running experience.
+
+## Identity and index ownership
+
+| Value | Example | Owner | Portable? |
+|---|---|---|---|
+| Canonical ontology identity | `TheSingularityWorkshop.Visualize` | Capability author / semantic contract | Yes |
+| Exact MicroBundle version | `1.2.0` | Capability publisher | Yes |
+| Immutable content digest | SHA-256 | Artifact/repository contract | Yes |
+| Repository blob index | repository slot | MicroBundleRepository | No |
+| Platform cache/runtime index | `ulong` value `10` | Platform/FSM_COS cache | No |
+
+There are two independent index mappings:
+
+**Repository storage mapping**
+
+```text
+(ontology string, exact version, digest)
+    -> repository-local blob index
+    -> immutable artifact bytes
+```
+
+**Platform runtime mapping**
+
+```text
+ontology string
+    -> platform-local numeric handle (for example, 10)
+    -> cached, verified MicroBundle/runtime object
+```
+
+The numeric values in these two mappings may differ. Neither mapping may borrow the other's index as identity.
+
+## Runtime API compatibility
+
+The current Domain API exposes `MicroBundleDescriptor.Id` and `IMicroBundle.Id` as non-zero `ulong` values. `MicroBundleDependency` and `MicroBundleDependencyRequest` also use numeric runtime IDs.
+
+Keep that efficient runtime representation. Under this lifecycle, those numeric IDs are local runtime handles resolved from portable ontology declarations before FSM_COS executes the dependency graph. They are not repository blob indexes and are not the portable identifiers authored into manifests.
+
+The boundary that turns a manifest ontology string into a local runtime handle belongs to the platform/FSM_COS composition path. It must:
+- resolve only registered/cached ontology identities;
+- maintain a consistent local mapping for the platform cache lifetime;
+- ensure distinct ontology identities cannot collide;
+- bind the resolved handle to the requested exact version and verified artifact;
+- resolve portable dependency declarations into the corresponding local runtime handles before numeric dependency execution;
+- reject unknown identities, duplicate/conflicting registrations, missing artifacts, version mismatches, digest mismatches, and ambiguous dependency resolution.
+
+A cache rebuild may assign different local handles, provided the mapping is rebuilt consistently before composition and no persisted portable manifest depends on those handles. If a local runtime cache persists numeric handles across restarts, its mapping metadata must persist with it and be validated before reuse.
+
+Do not hash ontology strings into arbitrary `ulong` values as a substitute for a registered mapping. Do not use the repository blob index as the runtime ID. Do not add a global numeric identity requirement where a platform-local mapping is sufficient.
+
+Existing numeric-only manifests, if any, require an explicit compatibility adapter or migration plan. Do not silently reinterpret their values as repository indexes or ontology identifiers.
 
 ## Ontology identifier is not an ontology signature
 
-The portable ontology identifier used in an artifact revision (for example, `TheSingularityWorkshop.Renderer`) names a capability independently of a repository. It is a canonical string identity for artifact exchange.
+The portable ontology identifier (for example, `TheSingularityWorkshop.Renderer`) names a capability independently of a repository.
 
-Do not conflate that identifier with the nine-layer integer `OntologySignature` found in the older Architect / Singularity Hub work. That signature is a semantic coordinate composed of nine integer layer values, with editor-facing strings resolved through a separate registry. It describes semantic placement/structure; it is not the repository artifact key, the MicroBundle runtime `ulong`, or a repository-local storage handle.
+Do not conflate it with the nine-layer integer `OntologySignature` from older Architect / Singularity Hub work. That signature is a semantic coordinate composed of nine integer layer values, with editor-facing strings resolved through a separate registry. It is not the repository artifact index, the local FSM_COS handle, or the portable MicroBundle identifier.
 
-These concepts may eventually be related by an explicit Domain-owned contract, but the current MicroBundleDomain API does not define that relationship. Until such a contract exists, keep them as distinct values and do not derive one from the other.
+These concepts may be related later through an explicit contract, but they are distinct values today.
 
-## Ownership rules
+## Security and failure behavior
 
-1. A capability author owns its semantic identity and versioning intent.
-2. MicroBundleDomain owns the runtime contract and the meaning of its current numeric `Id`.
-3. A repository owns its repository-scoped numeric handle and the durable mapping from a portable artifact revision to that handle.
-4. A composition host owns resolution of its manifest/dependency graph and must not infer identity from display names, assembly names, paths, or repository-local handles.
-5. An artifact hash is an integrity check over exact bytes. It is not a substitute for publisher authentication or trust policy.
-6. The repository does not own ontology meaning, dependency semantics, arbitration, or runtime assembly.
+A SHA-256 digest verifies exact bytes; it does not authenticate a publisher or establish that an artifact is safe to execute. Publisher authorization and execution trust remain separate policy concerns.
 
-## There are two different mappings
+The resolution/composition path must fail closed for:
+- unknown ontology identity;
+- missing local artifact/cache entry;
+- missing repository artifact during acquisition;
+- invalid or conflicting local mapping;
+- duplicate ontology registration;
+- incompatible or unapproved version;
+- digest mismatch or corrupted bytes;
+- unresolved dependency;
+- materialized descriptor/runtime ID inconsistent with the resolved local handle.
 
-**Mapping A — artifact location (Repository responsibility):**
+An update notification is advisory. Only an explicitly approved and newly published experience manifest changes the version an experience consumes.
 
-`(ontology, exact version, SHA-256) → repository-scoped storage handle → verified artifact bytes`.
+## Existing implementation boundaries
 
-Repository PR #39 implemented this durable mapping in canonical Repository `development`. It does not, by itself, map a portable identity to the runtime/domain ID used by MicroBundle dependencies and FSM_COS manifests.
+The MicroBundle Repository owns portable revision ingestion, repository-local blob indexing, immutable artifact retrieval, and byte verification.
 
-**Mapping B — runtime identity (cross-repository contract):**
+The Domain owns the runtime object/descriptor contracts and numeric local-handle representation.
 
-`portable semantic identity → runtime/domain ID`.
+FSM_COS/platform composition owns manifest resolution, local ontology-to-runtime mapping, version verification, and conversion of portable dependency declarations into numeric runtime dependency handles.
 
-This mapping is not yet implemented as a first-class Domain contract. It must be specified with FSM_COS and consumers before a portable artifact can safely become a runtime dependency. The host/materializer must verify the descriptor's runtime ID against the intended binding; it must not assume that the repository storage handle is that ID.
+The experience editor owns authoring-time acquisition, review/approval of creator updates, and publication of portable manifests.
 
-The mapping contract must reject:
+AnyApp owns the host lifecycle and consumes the composed runtime assembly. Renderer and Visualize remain capability implementations delivered as MicroBundles, not NuGet capability packages.
 
-- an unknown portable ontology identity;
-- a zero or otherwise invalid runtime identifier;
-- a duplicate or conflicting binding;
-- a version mismatch;
-- a content-hash mismatch;
-- an artifact whose bytes do not match its SHA-256;
-- an ambiguous dependency resolution.
+The Repository's existing FSM_COS integration adapter accepts an explicit runtime-ID-to-artifact-address mapping and verifies materialized IDs. That is a useful adapter boundary, but the repository storage index and platform runtime handle remain separate namespaces.
 
-A repository-scoped storage handle may be used within that repository's artifact API, but it must never be interpreted as a globally stable semantic or runtime identifier.
+## Required cross-repository proof
 
-## Current implementation and compatibility
+The aligned implementation must demonstrate:
 
-The current Domain API exposes `MicroBundleDescriptor.Id` and `IMicroBundle.Id` as the runtime/domain identity. `MicroBundleDependency` and `MicroBundleDependencyRequest` currently express dependencies using numeric runtime bundle IDs; the request type also carries optional opaque configuration bytes and supports exact-version pinning.
+1. Creator registration by canonical ontology string and immutable version.
+2. Repository resolution from portable revision to repository-local blob index and verified bytes.
+3. Immediate authoring-time acquisition by ontology string.
+4. Portable manifest publication containing ontology strings, exact versions, and required integrity identity, with no local indexes.
+5. Platform/FSM_COS resolution from ontology string to a local numeric handle.
+6. Exact version and digest validation before composition/execution.
+7. Dependency declarations resolved portably and projected to local numeric runtime handles.
+8. Fast numeric runtime/array access after resolution.
+9. Creator update notification without automatic upgrade.
+10. Explicit author approval and a new experience-manifest version for upgrades.
+11. Fail-closed behavior for missing, unknown, conflicting, corrupt, incompatible, or unapproved artifacts.
+12. Compatibility or migration coverage for existing numeric-only manifests.
+13. Consistent behavior across MicroBundleDomain, MicroBundleRepository, FSM_COS, Experiences, Renderer, Visualize, and AnyApp.
 
-The Repository PR chain #39 → #40 → #41 is now merged into canonical Repository `development`. It implements portable `(ontology, exact version, SHA-256)` identity, durable repository-scoped bindings, REST identity ingestion/resolution with Workshop-only mutation authorization, and the authenticated publisher CLI. The repository's numeric artifact address is now explicitly a repository-local storage handle. The REST delivery package no longer references Domain or FSM_COS; a separate `TheSingularityWorkshop.MicroBundleRepository.FSM_COS` integration package owns runtime catalog/materialization.
-
-That integration package accepts an explicit `runtimeId -> MicroBundleArtifactAddress` map and verifies both `IMicroBundle.Id` and `MicroBundleDescriptor.Id` after materialization. It proves that runtime IDs and repository-local storage handles can differ. It does **not** yet derive the mapping from portable semantic identity. The Domain still has no first-class ontology identity type or portable-to-runtime mapping.
-
-Therefore this document does **not** silently reinterpret existing numeric IDs, add an unverified ontology-to-runtime mapping, or claim that portable dependency resolution is complete. Existing numeric manifests and dependencies remain on their current contract until the Domain-owned mapping is specified, tested, and integrated with FSM_COS and its consumers.
-
-## Required proof before changing the public runtime contract
-
-The complete cross-repository acceptance suite must prove:
-
-1. The portable ontology identity has one canonical representation and explicit version semantics.
-2. A portable revision maps deterministically to a repository-scoped storage handle; handles may differ between repositories.
-3. A separate portable-to-runtime mapping resolves the intended runtime/domain identity without reusing the storage handle.
-4. Repeated ingestion of the same immutable revision is idempotent.
-5. Conflicting or duplicate mappings fail closed.
-6. Unknown ontology identities do not receive invented runtime IDs.
-7. Version and SHA-256 mismatches are rejected.
-8. Dependency closure resolves through the explicit portable-to-runtime mapping.
-9. Existing numeric manifests either remain compatible or have a documented, tested migration path.
-10. Mapping behavior is deterministic under concurrent writers and repository restart.
-11. FSM_COS, Renderer, Visualize, AnyApp, and repository adapters agree on the same semantics.
-
-These are cross-repository proofs. A unit test of a value object or repository index alone is not sufficient to claim end-to-end identity reconciliation.
+A repository-index unit test or a numeric runtime unit test alone is not an end-to-end proof.
 
 ## Related contracts
 
 - [MicroBundle architecture](ARCHITECTURE.md)
 - [Stable parameter identity](STABLE_PARAMETER_IDS.md)
 - [Provider resolution contract](PROVIDER_RESOLUTION_CONTRACT.md)
-- [Repository implementation map](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/blob/development/docs/DOMAIN_MAP.md)
 - [Domain identity reconciliation issue #28](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleDomain/issues/28)
 - [Repository portable identity reconciliation](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/blob/development/docs/IDENTITY_RECONCILIATION.md)
 - [Repository FSM_COS integration adapter](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/tree/development/src/FSM_COS/TheSingularityWorkshop.MicroBundleRepository.FSM_COS)
