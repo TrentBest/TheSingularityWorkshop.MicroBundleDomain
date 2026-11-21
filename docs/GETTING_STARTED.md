@@ -104,9 +104,10 @@ Or provide configuration bytes with the request:
 ~~~csharp
 public IReadOnlyList<MicroBundleDependencyRequest> Dependencies { get; } =
 [
-    new(
-        BundleId: 2001,
-        Configuration: configurationBytes)
+    MicroBundleDependencyRequest.Pinned(
+        bundleId: 2001,
+        version: "1.0.0",
+        configuration: configurationBytes)
 ];
 ~~~
 
