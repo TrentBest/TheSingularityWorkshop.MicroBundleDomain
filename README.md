@@ -665,13 +665,14 @@ For the complete result matrix, methodology, and instructions for finding the me
 ## Version and package status
 
 **Package:** `TheSingularityWorkshop.MicroBundleDomain`  
-**Next release:** `1.0.1`  
-**Target:** .NET 10  
+**Latest published version:** `1.0.1`  
+**Published target:** .NET 8  
+**Current development target:** .NET 10  
 **License:** MIT
 
-The repository previously published a `1.0.0` package before the ownership boundary was finalized. That package is immutable on NuGet.
+Versions `1.0.0` and `1.0.1` have already been published and are immutable on NuGet. The published `1.0.1` package is the released package baseline; the current `development` branch has since moved to .NET 10 and is forward-moving source, not a replacement for the published package.
 
-The current source corrects the ownership model by making the executable MicroBundle contract domain-owned. The `1.0.1` source is staged for review; publication is a separate release decision.
+Before preparing another package, select a new version greater than `1.0.1` and explicitly review the target-framework compatibility decision. Do not pack the current development source as `1.0.1` for publication. Successful pack or development-evidence workflows do not publish the package; the NuGet publish job remains separately gated and skipped unless explicitly authorized.
 
 ---
 
