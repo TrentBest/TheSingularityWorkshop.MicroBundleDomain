@@ -21,7 +21,7 @@ A `MicroBundleProviderReference` pins four values:
 - provider ID;
 - provider contract version.
 
-The reference must match a provider declaration in the resolved composition. A matching name alone is insufficient.
+The preparation context exposes a deterministic, immutable `Providers` snapshot of version-pinned declarations across the resolved dependency closure. Legacy unversioned declarations remain visible in descriptors but are omitted from this exact-resolution catalogue. A reference must match a declaration in the resolved composition; a matching name alone is insufficient.
 
 ## Host-owned resolution
 
@@ -38,7 +38,7 @@ The domain package does not own a global registry, service locator, GUI framewor
 
 ## Optional preparation lifecycle
 
-A MicroBundle may implement `IMicroBundlePreparable`:
+A MicroBundle may implement `IMicroBundlePreparable`. It can inspect `context.Providers` to discover available, version-pinned declarations before requesting a typed handle:
 
 ```csharp
 public void Prepare(IMicroBundlePreparationContext context)
