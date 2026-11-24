@@ -302,6 +302,8 @@ They share identity information deliberately, but they are not interchangeable r
 
 That is intentionally small.
 
+**New additive provider surface:** provider declarations can optionally pin a contract version. A host-owned resolver can supply typed provider handles to opt-in `IMicroBundlePreparable` bundles after dependency closure validation and before any bundle is loaded. See [Typed Provider Contracts and Preparation](docs/PROVIDER_PREPARATION.md). This does not make MicroBundleDomain GUI-aware or introduce a service locator.
+
 This package does **not** try to become your storage system, REST client, renderer, GUI framework, application host, or composition engine. Those are separate concerns.
 
 ---
