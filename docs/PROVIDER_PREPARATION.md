@@ -1,3 +1,6 @@
+<!-- The Singularity Workshop moniker -->
+<p align="center"><a href="https://github.com/TrentBest"><img src="https://raw.githubusercontent.com/TrentBest/TheSingularityWorkshop.Renderer/development/docs/assets/moniker.svg" alt="The Singularity Workshop — animated workshop moniker" width="720" /></a></p>
+
 # Typed Provider Contracts and Preparation
 
 ## Purpose
@@ -69,3 +72,9 @@ Bundles that do not implement `IMicroBundlePreparable` remain fully compatible. 
 | Bundle installation and arbitration | MicroBundle lifecycle and composition host |
 
 MicroBundleDomain deliberately does not define `IDiegeticGUI` or any GUI-specific type. A GUI contract belongs in the relevant GUI/authoring integration layer; the domain only provides the neutral, typed seam through which a host can resolve it.
+
+
+---
+
+<!-- THE SINGULARITY WORKSHOP FOOTER -->
+<p align="center"><img src="https://raw.githubusercontent.com/TrentBest/FSM_API/master/Documentation/Branding/TheSingularityWorkshop.png" alt="The Singularity Workshop avatar" width="200" /></p>
