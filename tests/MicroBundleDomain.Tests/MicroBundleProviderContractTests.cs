@@ -58,6 +58,7 @@ public sealed class MicroBundleProviderContractTests
     private sealed class TestPreparationContext(ulong runtimeId) : IMicroBundlePreparationContext
     {
         public ulong RuntimeId { get; } = runtimeId;
+        public IReadOnlyList<MicroBundleProviderReference> Providers { get; } = [];
 
         public bool TryGetProvider<TProvider>(
             MicroBundleProviderReference reference,
