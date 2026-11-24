@@ -62,6 +62,9 @@ public sealed class MicroBundleDescriptor
         if (values.Any(x => string.IsNullOrWhiteSpace(x.Id)))
             throw new ArgumentException("A MicroBundle provider requires an ID.", nameof(providers));
 
+        if (values.Any(x => x.ContractVersion is not null && string.IsNullOrWhiteSpace(x.ContractVersion)))
+            throw new ArgumentException("A versioned MicroBundle provider requires a contract version.", nameof(providers));
+
         if (values.Select(x => x.Id).Distinct(StringComparer.Ordinal).Count() != values.Length)
             throw new ArgumentException("A MicroBundle cannot declare the same provider more than once.", nameof(providers));
 
@@ -100,4 +103,16 @@ public readonly record struct MicroBundleDependency(ulong BundleId)
 /// <summary>
 /// Identifies a provider exposed by a MicroBundle.
 /// </summary>
-public readonly record struct MicroBundleProvider(string Id);
+public readonly record struct MicroBundleProvider(string Id)
+{
+    /// <summary>Gets the exact provider contract version, when this declaration is versioned.</summary>
+    public string? ContractVersion { get; init; }
+
+    /// <summary>Creates a provider declaration pinned to an exact contract version.</summary>
+    public MicroBundleProvider(string id, string contractVersion) : this(id)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(id);
+        ArgumentException.ThrowIfNullOrWhiteSpace(contractVersion);
+        ContractVersion = contractVersion;
+    }
+}
