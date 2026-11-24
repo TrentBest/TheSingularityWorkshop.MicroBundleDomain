@@ -28,7 +28,8 @@ public sealed class MicroBundleDescriptor
         Version = version;
     }
 
-    /// <summary>Gets the stable MicroBundle identity.</summary>
+    /// <summary>Gets the numeric runtime identity assigned to this materialized MicroBundle.</summary>
+    /// <remarks>This is not the portable ontology identity or a repository storage handle.</remarks>
     public ulong Id { get; }
 
     /// <summary>Gets the declared MicroBundle version.</summary>
