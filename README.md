@@ -34,7 +34,7 @@ Start with the plain-language introduction and the 60-second example; then inspe
 ## 🟪 05 Documentation and theory
 
 [Massive simulations: dominoes, marbles, and scale](docs/MASSIVE_SIMULATIONS.md) · [Cross-repository MicroBundle domain map](https://github.com/TrentBest/TheSingularityWorkshop.MicroBundleRepository/blob/development/docs/DOMAIN_MAP.md) · 
-[Start here](#start-here) · [See it work in 60 seconds](#-03--see-it-work-in-60-seconds) · [Documentation](docs/)
+[Portable dependency contract](docs/PORTABLE_DEPENDENCY_CONTRACT.md) · [Identity model](docs/IDENTITY_MODEL.md) · [Start here](#start-here) · [See it work in 60 seconds](#-03--see-it-work-in-60-seconds) · [Documentation](docs/)
 
 ---
 
