@@ -3,6 +3,8 @@
 
 # Typed Provider Contracts and Preparation
 
+> **Package status:** These additive contracts are present in the `development` source only. The currently published NuGet 1.0.1 package does not yet contain them; package publication and dependency advancement remain separate release decisions.
+
 ## Purpose
 
 A provider declaration is an opaque statement that a MicroBundle exposes a capability. The domain contract records identity and version without defining the capability's meaning or selecting a dependency-injection container.
