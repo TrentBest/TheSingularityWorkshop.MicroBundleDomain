@@ -50,6 +50,24 @@ The Domain does not decode the configuration bytes. Their schema and serializati
 
 Descriptor dependencies and runtime dependency requests are related declarations, but they are different types: the descriptor records dependency identity/version metadata, while the runtime request can also carry configuration. The Domain does not currently enforce parity between those two collections. Hosts and bundle authors must not assume that parity is automatically validated.
 
+## Portable identity and dependency declarations
+
+### `PortableMicroBundleReference`
+
+Identifies a portable capability revision by canonical ontology string and exact version, with an optional SHA-256 digest. It contains no repository storage handle or platform-local runtime slot. `IsContentPinned` is true only when the reference is valid and includes a digest; publication/runtime policies requiring byte pinning must enforce that condition and verify the retrieved bytes.
+
+### `PortableMicroBundleDependency`
+
+Pairs a valid portable reference with optional opaque request configuration. Configuration is preserved for composition but is not part of artifact identity.
+
+### `IPortableMicroBundle`
+
+An additive interface for capabilities participating in portable composition. `PortableIdentity` identifies the materialized artifact, and `PortableDependencies` is authoritative for the portable dependency closure.
+
+The Domain does not map ontology identities to local slots, retrieve artifacts, verify digests, or enforce parity. The host/materializer must map the complete portable closure to platform-local numeric runtime identities and verify before staging that both `MicroBundleDescriptor.Dependencies` and `IMicroBundle.Dependencies` are exact projections of the portable declarations, including exact version pins and corresponding configuration bytes. Missing, extra, duplicate, conflicting, or unpinned projections fail closed.
+
+The legacy numeric contract remains supported and is not silently reinterpreted as portable identity. See [Portable Dependency Contract](PORTABLE_DEPENDENCY_CONTRACT.md) and [Identity Model](IDENTITY_MODEL.md).
+
 ## Host contexts
 
 ### `IMicroBundleLoadContext`
