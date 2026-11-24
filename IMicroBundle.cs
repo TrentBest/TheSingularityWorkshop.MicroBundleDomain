@@ -11,7 +11,7 @@ public interface IMicroBundle
     MicroBundleDescriptor Descriptor { get; }
 
     /// <summary>
-    /// Gets the stable MicroBundle identity.
+    /// Gets the numeric runtime identity exposed by this materialized MicroBundle. It is not the portable ontology identity.
     /// </summary>
     ulong Id => Descriptor.Id;
 
